@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".AddLocationActivity">
+
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Back"
+        android:textSize="24sp"
+        android:translationX="-120.dp"
+        android:translationY="-140.dp" />
+
+    <EditText
+        android:id="@+id/editTextText2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="text"
+        android:text="LocationName"
+        android:translationX="-50.dp"
+        android:translationY="-140.dp" />
+
+    <EditText
+        android:id="@+id/editTextText3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="15"
+        android:inputType="text"
+        android:text="Address"
+        android:translationX="0.dp"
+        android:translationY="-140.dp" />
+
+    <EditText
+        android:id="@+id/editTextNumberDecimal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="numberDecimal"
+        android:text="MaxAttendees"
+        android:translationX="-50.dp"
+        android:translationY="-140.dp" />
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:translationX="-50.dp"
+        android:translationY="-140.dp" />
+
+    <RadioButton
+        android:id="@+id/radio_birthday"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BirthDay"
+        android:translationX="-100.dp"
+        android:translationY="-140.dp" />
+
+    <RadioButton
+        android:id="@+id/radio_concert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Concert"
+        android:translationX="-101.dp"
+        android:translationY="-140.dp" />
+
+    <RadioButton
+        android:id="@+id/radio_party"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Party"
+        android:translationX="-110.dp"
+        android:translationY="-140.dp" />
+
+    <EditText
+        android:id="@+id/editTextNumberDecimal3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="5"
+        android:inputType="numberDecimal"
+        android:text="Hours"
+        android:translationX="-100.dp"
+        android:translationY="-140.dp" />
+
+    <EditText
+        android:id="@+id/editTextNumberDecimal5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="5"
+        android:inputType="numberDecimal"
+        android:text="Days"
+        android:translationX="75dp"
+        android:translationY="-185.dp" />
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>
