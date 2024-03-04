@@ -11,7 +11,6 @@ import androidx.core.view.WindowInsetsCompat
 
 class ToDoListActivity : AppCompatActivity() {
 
-    private lateinit var welcomeText: TextView
     private lateinit var backButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,7 +20,6 @@ class ToDoListActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_to_do_list)
-        welcomeText = findViewById(R.id.welcomeText)
         backButton = findViewById(R.id.backButton)
 
         // Open new activity on button click
