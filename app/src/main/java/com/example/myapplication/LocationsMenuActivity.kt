@@ -11,7 +11,7 @@ class LocationsMenuActivity : AppCompatActivity() {
     private lateinit var welcomeText: TextView
     private lateinit var backButton: Button
     private lateinit var addButton: Button
-    private lateinit var viewButton: Button
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
 //        super.onCreate(savedInstanceState)
@@ -23,7 +23,7 @@ class LocationsMenuActivity : AppCompatActivity() {
         welcomeText = findViewById(R.id.welcomeText)
         backButton = findViewById(R.id.backButton)
         addButton = findViewById(R.id.AddLocationButton)
-        viewButton = findViewById(R.id.ViewLocationsButton)
+
         // Open new activity on button click
         backButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
@@ -35,9 +35,6 @@ class LocationsMenuActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        viewButton.setOnClickListener {
-            val intent = Intent(this, ViewLocationsActivity::class.java)
-            startActivity(intent)
-        }
+
     }
 }
