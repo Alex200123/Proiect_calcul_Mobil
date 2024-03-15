@@ -33,7 +33,8 @@ import com.example.lunchtray.R
 
 @Composable
 fun StartOrderScreen(
-    onStartOrderButtonClicked: () -> Unit,
+    onLocationsButtonClicked: () -> Unit,
+    onToDoButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -42,10 +43,16 @@ fun StartOrderScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Button(
-            onClick = onStartOrderButtonClicked,
+            onClick = onLocationsButtonClicked,
             Modifier.widthIn(min = 250.dp)
         ) {
             Text(stringResource(R.string.start_order))
+        }
+        Button(
+            onClick = onToDoButtonClicked,
+            Modifier.widthIn(min = 250.dp)
+        ) {
+            Text(stringResource(R.string.to_do_list))
         }
     }
 }
@@ -54,7 +61,8 @@ fun StartOrderScreen(
 @Composable
 fun StartOrderPreview(){
     StartOrderScreen(
-        onStartOrderButtonClicked = {},
+        onLocationsButtonClicked = {},
+        onToDoButtonClicked = {},
         modifier = Modifier
             .padding(dimensionResource(R.dimen.padding_medium))
             .fillMaxSize()

@@ -112,7 +112,10 @@ fun LunchTrayApp() {
         ) {
             composable(route = LunchTrayScreen.Start.name) {
                 StartOrderScreen(
-                    onStartOrderButtonClicked = {
+                    onLocationsButtonClicked = {
+                        navController.navigate(LunchTrayScreen.Entree.name)
+                    },
+                    onToDoButtonClicked = {
                         navController.navigate(LunchTrayScreen.Entree.name)
                     },
                     modifier = Modifier
