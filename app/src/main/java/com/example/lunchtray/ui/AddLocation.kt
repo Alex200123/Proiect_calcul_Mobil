@@ -24,22 +24,18 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.lunchtray.R
 import com.example.lunchtray.datasource.DataSource
-import com.example.lunchtray.model.MenuItem
 import com.example.lunchtray.model.MenuItem.SideDishItem
 
 @Composable
 fun SideDishMenuScreen(
     options: List<SideDishItem>,
     onCancelButtonClicked: () -> Unit,
-    onNextButtonClicked: () -> Unit,
-    onSelectionChanged: (SideDishItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    BaseMenuScreen(
+    BaseMenuScreenAdd(
         options = options,
         onCancelButtonClicked = onCancelButtonClicked,
-        onNextButtonClicked = onNextButtonClicked,
-        onSelectionChanged = onSelectionChanged as (MenuItem) -> Unit,
+
         modifier = modifier
     )
 }
@@ -49,9 +45,9 @@ fun SideDishMenuScreen(
 fun SideDishMenuPreview(){
     SideDishMenuScreen(
         options = DataSource.sideDishMenuItems,
-        onNextButtonClicked = {},
+
         onCancelButtonClicked = {},
-        onSelectionChanged = {},
+
         modifier = Modifier
             .padding(dimensionResource(R.dimen.padding_medium))
             .verticalScroll(rememberScrollState())

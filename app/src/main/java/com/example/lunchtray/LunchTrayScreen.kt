@@ -134,9 +134,7 @@ fun LunchTrayApp() {
                     onNextButtonClicked = {
                         navController.navigate(LunchTrayScreen.SideDish.name)
                     },
-                    onSelectionChanged = { item ->
-                        viewModel.updateEntree(item)
-                    },
+
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
                         .padding(innerPadding)
@@ -150,12 +148,7 @@ fun LunchTrayApp() {
                         viewModel.resetOrder()
                         navController.popBackStack(LunchTrayScreen.Start.name, inclusive = false)
                     },
-                    onNextButtonClicked = {
-                        navController.navigate(LunchTrayScreen.Accompaniment.name)
-                    },
-                    onSelectionChanged = { item ->
-                        viewModel.updateSideDish(item)
-                    },
+
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
                         .padding(innerPadding)
