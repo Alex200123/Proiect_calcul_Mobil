@@ -27,29 +27,46 @@ import com.example.lunchtray.datasource.DataSource
 import com.example.lunchtray.model.MenuItem.SideDishItem
 
 @Composable
-fun SideDishMenuScreen(
+fun AddLocationMenuScreen(
     options: List<SideDishItem>,
-    onCancelButtonClicked: () -> Unit,
-    modifier: Modifier = Modifier
+
+    modifier: Modifier = Modifier,
+
 ) {
-    BaseMenuScreenAdd(
+    BaseMenuScreenAddLocations(
         options = options,
-        onCancelButtonClicked = onCancelButtonClicked,
 
-        modifier = modifier
+
+        modifier = modifier,
+
     )
 }
 
-@Preview
-@Composable
-fun SideDishMenuPreview(){
-    SideDishMenuScreen(
-        options = DataSource.sideDishMenuItems,
+//@Composable
+//fun AddLocationMenuScreen(
+//
+//    modifier: Modifier = Modifier,
+//    locationNameTextField: (String) -> Unit,
+//) {
+//    BaseMenuScreenAddLocations(
+//
+//
+//        modifier = modifier,
+//        locationNameTextField = locationNameTextField
+//    )
+//}
 
-        onCancelButtonClicked = {},
 
-        modifier = Modifier
-            .padding(dimensionResource(R.dimen.padding_medium))
-            .verticalScroll(rememberScrollState())
-    )
-}
+//@Preview
+//@Composable
+//fun AddLocationMenuPreview(){
+//    AddLocationMenuScreen(
+//        options = DataSource.sideDishMenuItems,
+//
+//        onCancelButtonClicked = {},
+//
+//        modifier = Modifier
+//            .padding(dimensionResource(R.dimen.padding_medium))
+//            .verticalScroll(rememberScrollState())
+//    )
+//}

@@ -44,7 +44,7 @@ import com.example.lunchtray.ui.AccompanimentMenuScreen
 import com.example.lunchtray.ui.CheckoutScreen
 import com.example.lunchtray.ui.EntreeMenuScreen
 import com.example.lunchtray.ui.OrderViewModel
-import com.example.lunchtray.ui.SideDishMenuScreen
+import com.example.lunchtray.ui.AddLocationMenuScreen
 import com.example.lunchtray.ui.StartOrderScreen
 
 enum class LunchTrayScreen(@StringRes val title: Int) {
@@ -142,16 +142,14 @@ fun LunchTrayApp() {
             }
 
             composable(route = LunchTrayScreen.SideDish.name) {
-                SideDishMenuScreen(
+                AddLocationMenuScreen(
                     options = DataSource.sideDishMenuItems,
-                    onCancelButtonClicked = {
-                        viewModel.resetOrder()
-                        navController.popBackStack(LunchTrayScreen.Start.name, inclusive = false)
-                    },
+
 
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
-                        .padding(innerPadding)
+                        .padding(innerPadding),
+
                 )
             }
 
