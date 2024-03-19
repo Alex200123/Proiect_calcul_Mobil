@@ -13,9 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-plugins {
-    id("com.android.application") version "8.1.0" apply false
-    id("com.android.library") version "8.1.0" apply false
-    id("org.jetbrains.kotlin.android") version "1.9.0" apply false
-}
+package com.example.lunchtray.model
+
+data class OrderUiState(
+    // Entree Selection
+    val entree: MenuItem.EntreeItem? = null,
+    val sideDish: MenuItem.SideDishItem? = null,
+    val accompaniment: MenuItem.AccompanimentItem? = null,
+    val itemTotalPrice: Double = 0.0,
+    val orderTax: Double = 0.0,
+    val orderTotalPrice: Double = 0.0
+)
