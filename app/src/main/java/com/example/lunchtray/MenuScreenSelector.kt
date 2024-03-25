@@ -15,7 +15,6 @@
  */
 package com.example.lunchtray
 
-import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -33,7 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -41,28 +39,30 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.lunchtray.datasource.DataSource
-import com.example.lunchtray.ui.AccompanimentMenuScreen
-import com.example.lunchtray.ui.CheckoutScreen
 import com.example.lunchtray.ui.EntreeMenuScreen
 import com.example.lunchtray.ui.OrderViewModel
 import com.example.lunchtray.ui.AddLocationMenuScreen
+import com.example.lunchtray.ui.AddToDoListScreen
 import com.example.lunchtray.ui.SignInScreen
 import com.example.lunchtray.ui.SignUpScreen
 import com.example.lunchtray.ui.StartOrderScreen
+import com.example.lunchtray.ui.ViewToDoListScreen
 import com.example.lunchtray.ui.getEmail
 import com.example.lunchtray.ui.getPassword
 import com.example.lunchtray.ui.getRepeatPassword
 import com.google.firebase.auth.FirebaseAuth
 
 
-enum class LunchTrayScreen(@StringRes val title: Int) {
+enum class ToDoAppScreen(@StringRes val title: Int) {
     SignIn(title = R.string.signin),
     SignUp(title = R.string.signup),
     Start(title = R.string.app_name),
     Entree(title = R.string.choose_entree),
     SideDish(title = R.string.choose_side_dish),
     Accompaniment(title = R.string.choose_accompaniment),
-    Checkout(title = R.string.order_checkout)
+    Checkout(title = R.string.order_checkout),
+    ToDoView(title = R.string.ToDoView),
+    ToDoAdd(title = R.string.ToDoAdd)
 }
 
 /**
@@ -70,7 +70,7 @@ enum class LunchTrayScreen(@StringRes val title: Int) {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LunchTrayAppBar(
+fun ToDoAppBar(
     @StringRes currentScreenTitle: Int,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
@@ -93,21 +93,21 @@ fun LunchTrayAppBar(
 }
 
 @Composable
-fun LunchTrayApp() {
+fun ToDoApp() {
     //Create NavController
     val navController = rememberNavController()
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Get the name of the current screen
-    val currentScreen = LunchTrayScreen.valueOf(
-        backStackEntry?.destination?.route ?: LunchTrayScreen.Start.name
+    val currentScreen = ToDoAppScreen.valueOf(
+        backStackEntry?.destination?.route ?: ToDoAppScreen.Start.name
     )
     // Create ViewModel
     val viewModel: OrderViewModel = viewModel()
 
     Scaffold(
         topBar = {
-            LunchTrayAppBar(
+            ToDoAppBar(
                 currentScreenTitle = currentScreen.title,
                 canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() }
@@ -118,16 +118,16 @@ fun LunchTrayApp() {
 
         NavHost(
             navController = navController,
-            startDestination = LunchTrayScreen.SignIn.name,
+            startDestination = ToDoAppScreen.SignIn.name,
         ) {
-            composable(route = LunchTrayScreen.SignIn.name) {
+            composable(route = ToDoAppScreen.SignIn.name) {
                 SignInScreen(
                     options = DataSource.sideDishMenuItems,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
                     onSignUpButtonClicked = {
-                        navController.navigate(LunchTrayScreen.SignUp.name)
+                        navController.navigate(ToDoAppScreen.SignUp.name)
                     },
                     onSubmitButtonClicked = {
                         val email:String = getEmail().trim()
@@ -143,7 +143,7 @@ fun LunchTrayApp() {
 
 
                                 //auth.signInWithEmailAndPassword(email,password)
-                                navController.navigate(LunchTrayScreen.Start.name)
+                                navController.navigate(ToDoAppScreen.Start.name)
 
                         }
                     }
@@ -151,7 +151,7 @@ fun LunchTrayApp() {
                 )
             }
 
-            composable(route = LunchTrayScreen.SignUp.name) {
+            composable(route = ToDoAppScreen.SignUp.name) {
                 SignUpScreen(
                     options = DataSource.sideDishMenuItems,
                     modifier = Modifier
@@ -172,7 +172,7 @@ fun LunchTrayApp() {
                             if(password == repeat_password)
                             {
                                 auth.createUserWithEmailAndPassword(email,password)
-                                navController.navigate(LunchTrayScreen.Start.name)
+                                navController.navigate(ToDoAppScreen.Start.name)
                             }
                         }
 
@@ -181,13 +181,30 @@ fun LunchTrayApp() {
                 )
             }
 
-            composable(route = LunchTrayScreen.Start.name) {
+            composable(route = ToDoAppScreen.ToDoView.name){
+                ViewToDoListScreen(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .padding(innerPadding),
+                    onCancelButtonClicked = { navController.navigate(ToDoAppScreen.Start.name) },
+                    onNextButtonClicked = { navController.navigate(ToDoAppScreen.ToDoAdd.name)})
+            }
+
+            composable(route = ToDoAppScreen.ToDoAdd.name){
+                AddToDoListScreen(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .padding(innerPadding)
+                )
+            }
+
+            composable(route = ToDoAppScreen.Start.name) {
                 StartOrderScreen(
                     onLocationsButtonClicked = {
-                        navController.navigate(LunchTrayScreen.Entree.name)
+                        navController.navigate(ToDoAppScreen.Entree.name)
                     },
                     onToDoButtonClicked = {
-                        navController.navigate(LunchTrayScreen.Entree.name)
+                        navController.navigate(ToDoAppScreen.ToDoView.name)
                     },
                     modifier = Modifier
                         .fillMaxSize()
@@ -195,15 +212,15 @@ fun LunchTrayApp() {
                 )
             }
 
-            composable(route = LunchTrayScreen.Entree.name) {
+            composable(route = ToDoAppScreen.Entree.name) {
                 EntreeMenuScreen(
                     options = DataSource.entreeMenuItems,
                     onCancelButtonClicked = {
                         viewModel.resetOrder()
-                        navController.popBackStack(LunchTrayScreen.Start.name, inclusive = false)
+                        navController.popBackStack(ToDoAppScreen.Start.name, inclusive = false)
                     },
                     onNextButtonClicked = {
-                        navController.navigate(LunchTrayScreen.SideDish.name)
+                        navController.navigate(ToDoAppScreen.SideDish.name)
                     },
 
                     modifier = Modifier
@@ -212,7 +229,7 @@ fun LunchTrayApp() {
                 )
             }
 
-            composable(route = LunchTrayScreen.SideDish.name) {
+            composable(route = ToDoAppScreen.SideDish.name) {
                 AddLocationMenuScreen(
                     options = DataSource.sideDishMenuItems,
 
@@ -221,47 +238,6 @@ fun LunchTrayApp() {
                         .verticalScroll(rememberScrollState())
                         .padding(innerPadding),
 
-                )
-            }
-
-            composable(route = LunchTrayScreen.Accompaniment.name) {
-                AccompanimentMenuScreen(
-                    options = DataSource.accompanimentMenuItems,
-                    onCancelButtonClicked = {
-                        viewModel.resetOrder()
-                        navController.popBackStack(LunchTrayScreen.Start.name, inclusive = false)
-                    },
-                    onNextButtonClicked = {
-                        navController.navigate(LunchTrayScreen.Checkout.name)
-                    },
-                    onSelectionChanged = { item ->
-                        viewModel.updateAccompaniment(item)
-                    },
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .padding(innerPadding)
-                )
-            }
-
-            composable(route = LunchTrayScreen.Checkout.name) {
-                CheckoutScreen(
-                    orderUiState = uiState,
-                    onCancelButtonClicked = {
-                        viewModel.resetOrder()
-                        navController.popBackStack(LunchTrayScreen.Start.name, inclusive = false)
-                    },
-                    onNextButtonClicked = {
-                        viewModel.resetOrder()
-                        navController.popBackStack(LunchTrayScreen.Start.name, inclusive = false)
-                    },
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .padding(
-                            top = innerPadding.calculateTopPadding(),
-                            bottom = innerPadding.calculateBottomPadding(),
-                            start = dimensionResource(R.dimen.padding_medium),
-                            end = dimensionResource(R.dimen.padding_medium),
-                        )
                 )
             }
         }

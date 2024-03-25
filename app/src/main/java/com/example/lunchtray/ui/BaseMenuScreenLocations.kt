@@ -15,9 +15,6 @@
  */
 package com.example.lunchtray.ui
 
-import android.content.Intent
-import android.widget.EditText
-import android.widget.RadioGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,11 +41,8 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.example.lunchtray.LunchTrayScreen
 import com.example.lunchtray.R
 import com.example.lunchtray.model.MenuItem
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun BaseMenuScreen(

@@ -15,41 +15,53 @@
  */
 package com.example.lunchtray.ui
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.lunchtray.R
 import com.example.lunchtray.datasource.DataSource
+import com.example.lunchtray.model.MenuItem
 import com.example.lunchtray.model.MenuItem.AccompanimentItem
 
+
 @Composable
-fun AccompanimentMenuScreen(
-    options: List<AccompanimentItem>,
+fun ViewToDoListScreen(
     onCancelButtonClicked: () -> Unit,
     onNextButtonClicked: () -> Unit,
-    onSelectionChanged: (AccompanimentItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    BaseMenuScreen(
-        options = options,
-        modifier = modifier,
-        onCancelButtonClicked = onCancelButtonClicked,
-        onNextButtonClicked = onNextButtonClicked
-    )
+
+    Column(modifier = modifier) {
+        MenuScreenButtonGroup(
+
+            onCancelButtonClicked = onCancelButtonClicked,
+            onNextButtonClicked = {
+                // Assert not null bc next button is not enabled unless selectedItem is not null.
+                onNextButtonClicked()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(R.dimen.padding_medium))
+        )
+    }
 }
 
 @Preview
 @Composable
-fun AccompanimentMenuPreview(){
-    AccompanimentMenuScreen(
-        options = DataSource.accompanimentMenuItems,
+fun ViewToDoListPreview(){
+    ViewToDoListScreen(
         onNextButtonClicked = {},
         onCancelButtonClicked = {},
-        onSelectionChanged = {},
         modifier = Modifier
             .padding(dimensionResource(R.dimen.padding_medium))
             .verticalScroll(rememberScrollState())
