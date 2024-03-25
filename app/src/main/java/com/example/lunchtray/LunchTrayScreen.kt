@@ -15,6 +15,7 @@
  */
 package com.example.lunchtray
 
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -45,9 +46,18 @@ import com.example.lunchtray.ui.CheckoutScreen
 import com.example.lunchtray.ui.EntreeMenuScreen
 import com.example.lunchtray.ui.OrderViewModel
 import com.example.lunchtray.ui.AddLocationMenuScreen
+import com.example.lunchtray.ui.SignInScreen
+import com.example.lunchtray.ui.SignUpScreen
 import com.example.lunchtray.ui.StartOrderScreen
+import com.example.lunchtray.ui.getEmail
+import com.example.lunchtray.ui.getPassword
+import com.example.lunchtray.ui.getRepeatPassword
+import com.google.firebase.auth.FirebaseAuth
+
 
 enum class LunchTrayScreen(@StringRes val title: Int) {
+    SignIn(title = R.string.signin),
+    SignUp(title = R.string.signup),
     Start(title = R.string.app_name),
     Entree(title = R.string.choose_entree),
     SideDish(title = R.string.choose_side_dish),
@@ -108,8 +118,69 @@ fun LunchTrayApp() {
 
         NavHost(
             navController = navController,
-            startDestination = LunchTrayScreen.Start.name,
+            startDestination = LunchTrayScreen.SignIn.name,
         ) {
+            composable(route = LunchTrayScreen.SignIn.name) {
+                SignInScreen(
+                    options = DataSource.sideDishMenuItems,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    onSignUpButtonClicked = {
+                        navController.navigate(LunchTrayScreen.SignUp.name)
+                    },
+                    onSubmitButtonClicked = {
+                        val email:String = getEmail().trim()
+                        val password: String = getPassword().trim()
+
+
+                        var auth:FirebaseAuth
+
+                        auth = FirebaseAuth.getInstance()
+
+                        if(email.isNotEmpty() && password.isNotEmpty())
+                        {
+
+
+                                //auth.signInWithEmailAndPassword(email,password)
+                                navController.navigate(LunchTrayScreen.Start.name)
+
+                        }
+                    }
+
+                )
+            }
+
+            composable(route = LunchTrayScreen.SignUp.name) {
+                SignUpScreen(
+                    options = DataSource.sideDishMenuItems,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    onSubmitButtonClicked = {
+                        val email:String = getEmail().trim()
+                        val password: String = getPassword().trim()
+                        val repeat_password: String = getRepeatPassword().trim()
+
+                        var auth:FirebaseAuth
+
+                        auth = FirebaseAuth.getInstance()
+
+
+                        if(email.isNotEmpty() && password.isNotEmpty() && repeat_password.isNotEmpty())
+                        {
+                            if(password == repeat_password)
+                            {
+                                auth.createUserWithEmailAndPassword(email,password)
+                                navController.navigate(LunchTrayScreen.Start.name)
+                            }
+                        }
+
+
+                    }
+                )
+            }
+
             composable(route = LunchTrayScreen.Start.name) {
                 StartOrderScreen(
                     onLocationsButtonClicked = {

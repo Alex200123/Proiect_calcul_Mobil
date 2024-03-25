@@ -15,6 +15,7 @@
  */
 package com.example.lunchtray.ui
 
+import android.content.Intent
 import android.widget.EditText
 import android.widget.RadioGroup
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,8 +44,10 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.lunchtray.LunchTrayScreen
 import com.example.lunchtray.R
 import com.example.lunchtray.model.MenuItem
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
@@ -137,11 +141,7 @@ fun BaseMenuScreenAddLocations(
 
 @Composable
 fun MenuScreenButtonGroupAdd(
-
-
     modifier: Modifier = Modifier,
-
-
 ) {
     var locationName by remember { mutableStateOf("Location Name") }
     var addressName by remember { mutableStateOf("Address Name") }
@@ -169,7 +169,7 @@ fun MenuScreenButtonGroupAdd(
 
     val selectedOption = remember { mutableStateOf("") }
 
-    Column {
+    Row {
         RadioButton(
             selected = selectedOption.value == "Birthday",
             onClick = { selectedOption.value = "Birthday" }
@@ -212,16 +212,151 @@ fun MenuScreenButtonGroupAdd(
     }
   }
 
-//@Composable
-//fun MenuScreenButtonGroupAdd(
-//    modifier: Modifier = Modifier,
-//    locationNameTextField: (String) -> Unit,
-//) {
-//    Row(
-//        modifier = modifier,
-//        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
-//    ){
-//
-//        TextField(value = "LocationName", onValueChange = locationNameTextField)
-//    }
-//}
+///////////////SignIn screen
+@Composable
+fun SignInMenu(
+    options: List<MenuItem>,
+    modifier: Modifier = Modifier,
+    onSignUpButtonClicked: () -> Unit,
+    onSubmitButtonClicked: () -> Unit,
+    ) {
+
+    var selectedItemName by rememberSaveable { mutableStateOf("") }
+
+    Column(modifier = modifier) {
+        options.forEach { item ->
+            val onClick = {
+                selectedItemName = item.name
+            }
+
+        }
+
+        SignInButtonGroup(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(R.dimen.padding_medium)),
+            onSignUpButtonClicked = onSignUpButtonClicked,
+            onSubmitButtonClicked = onSubmitButtonClicked,
+            )
+    }
+}
+
+
+@Composable
+fun SignInButtonGroup(
+    modifier: Modifier = Modifier,
+    onSignUpButtonClicked: () -> Unit,
+    onSubmitButtonClicked: () -> Unit,
+) {
+    var email by remember { mutableStateOf("Email") }
+    var password by remember { mutableStateOf("Password") }
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
+    ){
+        TextField(value = email, onValueChange = { email = it } )
+    }
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
+    ){
+        TextField(value = password, onValueChange = { password = it })
+    }
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.Center,
+    ){
+        Button(onClick = onSubmitButtonClicked){
+            Text(text = "Submit")
+        }
+        Button(onClick = onSignUpButtonClicked) {
+            Text(text = "SignUp")
+        }
+    }
+}
+
+///////////////SignUp screen
+@Composable
+fun SignUpMenu(
+    options: List<MenuItem>,
+    modifier: Modifier = Modifier,
+    onSubmitButtonClicked: () -> Unit,
+    ) {
+
+    var selectedItemName by rememberSaveable { mutableStateOf("") }
+
+    Column(modifier = modifier) {
+        options.forEach { item ->
+            val onClick = {
+                selectedItemName = item.name
+            }
+
+        }
+
+        SignUpButtonGroup(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(R.dimen.padding_medium)),
+            onSubmitButtonClicked = onSubmitButtonClicked,
+            )
+    }
+}
+
+var email: MutableState<String> = mutableStateOf("Email")
+var password:  MutableState<String> = mutableStateOf("Pass")
+var repeat_password :  MutableState<String> = mutableStateOf("Repeat")
+@Composable
+fun SignUpButtonGroup(
+    modifier: Modifier = Modifier,
+    onSubmitButtonClicked: () -> Unit,
+) {
+//    var email by remember { mutableStateOf("Email") }
+//    var password by remember { mutableStateOf("Password") }
+//    var repeat_password by remember { mutableStateOf("Repeat Password") }
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
+    ){
+        TextField(value = email.value, onValueChange = { email.value = it } )
+    }
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
+    ){
+        TextField(value = password.value, onValueChange = { password.value = it  })
+    }
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
+    ){
+        TextField(value = repeat_password.value, onValueChange = { repeat_password.value = it  })
+    }
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.Center,
+    ){
+        Button(onClick = onSubmitButtonClicked) {
+            Text(text = "Submit")
+        }
+
+    }
+}
+
+fun getEmail(): String
+{
+    return email.value
+}
+
+fun getPassword(): String
+{
+    return password.value
+}
+
+fun getRepeatPassword(): String
+{
+    return repeat_password.value
+}
