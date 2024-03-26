@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 package com.example.lunchtray.ui
-
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,7 +24,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -34,6 +33,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import com.example.lunchtray.Audio
+
 import com.example.lunchtray.R
 
 @Composable
@@ -62,17 +63,51 @@ fun AddToDoListButtonGroup(
         mutableStateOf("Item Name")
     }
 
+    var showMenu by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
     )
     {
         TextField(value = entryName, onValueChange = {entryName = it} )
-        //To fix this//
-        DropdownMenu(expanded = false, onDismissRequest = { /*TODO*/ }, modifier = Modifier) {
-            DropdownMenuItem(text = { /*TODO*/ }, onClick = { /*TODO*/ })
-            DropdownMenuItem(text = { /*TODO*/ }, onClick = { /*TODO*/ })
-            DropdownMenuItem(text = { /*TODO*/ }, onClick = { /*TODO*/ })
+
+        Button(onClick = { showMenu = !showMenu }) {
+            Text(text = "Select Location")
         }
+
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false }) {
+            DropdownMenuItem(text = { Text("Load") }, onClick = { showMenu = false })
+            DropdownMenuItem(text = { Text("Load") }, onClick = { showMenu = false })
+            DropdownMenuItem(text = { Text("Load") }, onClick = { showMenu = false })
+        }
+
+
+    }
+
+    var myAudio :Audio = Audio()
+
+    Row(
+        modifier = Modifier
+    )
+    {
+
+        Button(onClick = { myAudio.startRecording() }) {
+            Text(text = "Record")
+        }
+
+        Button(onClick = { myAudio.stopPlaying() }) {
+            Text(text = "Play")
+        }
+
+        Button(onClick = {
+            myAudio.stopRecording()
+            myAudio.startPlaying()
+        }) {
+            Text(text = "Stop")
+        }
+
     }
 
     Column (
