@@ -235,6 +235,8 @@ fun SignInMenu(
     }
 }
 
+var email_signin: MutableState<String> = mutableStateOf("Email")
+var password_signin:  MutableState<String> = mutableStateOf("Pass")
 
 @Composable
 fun SignInButtonGroup(
@@ -242,20 +244,19 @@ fun SignInButtonGroup(
     onSignUpButtonClicked: () -> Unit,
     onSubmitButtonClicked: () -> Unit,
 ) {
-    var email by remember { mutableStateOf("Email") }
-    var password by remember { mutableStateOf("Password") }
+
 
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
     ){
-        TextField(value = email, onValueChange = { email = it } )
+        TextField(value = email_signin.value, onValueChange = { email_signin.value = it } )
     }
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
     ){
-        TextField(value = password, onValueChange = { password = it })
+        TextField(value = password_signin.value, onValueChange = { password_signin.value = it })
     }
 
     Row(
@@ -269,6 +270,16 @@ fun SignInButtonGroup(
             Text(text = "SignUp")
         }
     }
+}
+
+fun getEmailSignin(): String
+{
+    return email_signin.value
+}
+
+fun getPasswordSignin(): String
+{
+    return password_signin.value
 }
 
 ///////////////SignUp screen

@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2023 The Android Open Source Project
  *
@@ -15,6 +16,7 @@
  */
 package com.example.lunchtray
 
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -33,6 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -48,8 +51,11 @@ import com.example.lunchtray.ui.SignUpScreen
 import com.example.lunchtray.ui.StartOrderScreen
 import com.example.lunchtray.ui.ViewToDoListScreen
 import com.example.lunchtray.ui.getEmail
+import com.example.lunchtray.ui.getEmailSignin
 import com.example.lunchtray.ui.getPassword
+import com.example.lunchtray.ui.getPasswordSignin
 import com.example.lunchtray.ui.getRepeatPassword
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -125,25 +131,29 @@ fun ToDoApp() {
                     options = DataSource.sideDishMenuItems,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(innerPadding), 
                     onSignUpButtonClicked = {
                         navController.navigate(ToDoAppScreen.SignUp.name)
                     },
                     onSubmitButtonClicked = {
-                        val email:String = getEmail().trim()
-                        val password: String = getPassword().trim()
+                        val email:String = getEmailSignin().trim()
+                        val password: String = getPasswordSignin().trim()
 
 
-                        var auth:FirebaseAuth
+                        val auth:FirebaseAuth
 
                         auth = FirebaseAuth.getInstance()
 
                         if(email.isNotEmpty() && password.isNotEmpty())
                         {
+                            auth.signInWithEmailAndPassword(email,password).addOnCompleteListener(
+                                {
+                                    if(it.isSuccessful)
+                                    {
+                                        navController.navigate(ToDoAppScreen.Start.name)
+                                    }
+                                })
 
-
-                                //auth.signInWithEmailAndPassword(email,password)
-                                navController.navigate(ToDoAppScreen.Start.name)
 
                         }
                     }
