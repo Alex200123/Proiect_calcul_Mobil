@@ -106,20 +106,12 @@ fun MenuScreenButtonGroup(
 
 @Composable
 fun BaseMenuScreenAddLocations(
-    options: List<MenuItem>,
     modifier: Modifier = Modifier,
-
+    onSubmitButtonClicked: () -> Unit,
     ) {
 
-    var selectedItemName by rememberSaveable { mutableStateOf("") }
 
     Column(modifier = modifier) {
-        options.forEach { item ->
-            val onClick = {
-                selectedItemName = item.name
-            }
-
-        }
 
         MenuScreenButtonGroupAdd(
 
@@ -127,38 +119,40 @@ fun BaseMenuScreenAddLocations(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.padding_medium)),
-
+            onSubmitButtonClicked = onSubmitButtonClicked
         )
     }
 }
 
+var locationName: MutableState<String> = mutableStateOf("Location Name")
+var addressName:  MutableState<String> = mutableStateOf("Address Name")
+var maxAttendees: MutableState<String> = mutableStateOf("Max Attendees")
+var hours:  MutableState<String> = mutableStateOf("Hours")
+var days:  MutableState<String> = mutableStateOf("Days")
 
 @Composable
 fun MenuScreenButtonGroupAdd(
     modifier: Modifier = Modifier,
+    onSubmitButtonClicked: () -> Unit,
 ) {
-    var locationName by remember { mutableStateOf("Location Name") }
-    var addressName by remember { mutableStateOf("Address Name") }
-    var maxAttendees by remember { mutableStateOf("Max Attendees") }
-    var hours by remember { mutableStateOf("Hours") }
-    var days by remember { mutableStateOf("Days") }
+
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
     ){
-        TextField(value = locationName, onValueChange = { locationName = it } )
+        TextField(value = locationName.value, onValueChange = { locationName.value = it } )
         }
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
     ){
-        TextField(value = addressName, onValueChange = { addressName = it })
+        TextField(value = addressName.value, onValueChange = { addressName.value = it })
     }
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
     ){
-        TextField(value = maxAttendees, onValueChange = { maxAttendees = it }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+        TextField(value = maxAttendees.value, onValueChange = { maxAttendees.value = it }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
     }
 
     val selectedOption = remember { mutableStateOf("") }
@@ -187,11 +181,11 @@ fun MenuScreenButtonGroupAdd(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
     ){
-        TextField(value = hours, onValueChange = { hours = it }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),  modifier = Modifier
+        TextField(value = hours.value, onValueChange = { hours.value = it }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),  modifier = Modifier
             .width(100.dp)
             .height(50.dp))
         Spacer(modifier = Modifier.width(100.dp))
-        TextField(value = days, onValueChange = { days = it }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),  modifier = Modifier
+        TextField(value = days.value, onValueChange = { days.value = it }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),  modifier = Modifier
             .width(100.dp)
             .height(50.dp))
     }
@@ -200,11 +194,32 @@ fun MenuScreenButtonGroupAdd(
         modifier = modifier,
         horizontalArrangement = Arrangement.Center,
     ){
-        Button(onClick = { /*TODO*/ }) {
+        Button(onClick =onSubmitButtonClicked) {
             Text(text = "Submit")
         }
     }
   }
+
+fun getLocationName(): String
+{
+    return locationName.value
+}
+fun getAddressName(): String
+{
+    return addressName.value
+}
+fun getMaxAttendees(): String
+{
+    return maxAttendees.value
+}
+fun getHours(): String
+{
+    return hours.value
+}
+fun getDays(): String
+{
+    return days.value
+}
 
 ///////////////SignIn screen
 @Composable

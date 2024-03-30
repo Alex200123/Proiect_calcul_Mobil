@@ -31,8 +31,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContentProviderCompat.requireContext
@@ -50,13 +52,20 @@ import com.example.lunchtray.ui.SignInScreen
 import com.example.lunchtray.ui.SignUpScreen
 import com.example.lunchtray.ui.StartOrderScreen
 import com.example.lunchtray.ui.ViewToDoListScreen
+import com.example.lunchtray.ui.getAddressName
+import com.example.lunchtray.ui.getDays
 import com.example.lunchtray.ui.getEmail
 import com.example.lunchtray.ui.getEmailSignin
+import com.example.lunchtray.ui.getHours
+import com.example.lunchtray.ui.getLocationName
+import com.example.lunchtray.ui.getMaxAttendees
 import com.example.lunchtray.ui.getPassword
 import com.example.lunchtray.ui.getPasswordSignin
 import com.example.lunchtray.ui.getRepeatPassword
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 
 enum class ToDoAppScreen(@StringRes val title: Int) {
@@ -181,8 +190,13 @@ fun ToDoApp() {
                         {
                             if(password == repeat_password)
                             {
-                                auth.createUserWithEmailAndPassword(email,password)
-                                navController.navigate(ToDoAppScreen.Start.name)
+                                auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(
+                                    {
+                                        if(it.isSuccessful)
+                                        {
+                                            navController.navigate(ToDoAppScreen.Start.name)
+                                        }
+                                    })
                             }
                         }
 
@@ -241,13 +255,41 @@ fun ToDoApp() {
 
             composable(route = ToDoAppScreen.SideDish.name) {
                 AddLocationMenuScreen(
-                    options = DataSource.sideDishMenuItems,
-
-
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
                         .padding(innerPadding),
+                    onSubmitButtonClicked = {
+                        val auth:FirebaseAuth
+                        val databaseRef:DatabaseReference
 
+
+                        val locationName = getLocationName().trim()
+                        val addressName = getAddressName().trim()
+                        val maxAttendees = getMaxAttendees().trim()
+                        val hours = getHours().trim()
+                        val days = getDays().trim()
+
+                        auth = FirebaseAuth.getInstance()
+
+                        databaseRef = FirebaseDatabase.getInstance().reference.
+                        child("Locations").
+                        child(auth.currentUser?.uid.toString()).
+                        child(locationName)
+                        if(locationName.isNotEmpty() &&
+                            addressName.isNotEmpty() &&
+                            maxAttendees.isNotEmpty()&&
+                            hours.isNotEmpty()       &&
+                            days.isNotEmpty())
+                        {
+                            databaseRef.push().setValue(locationName)
+                            databaseRef.push().setValue(addressName)
+                            databaseRef.push().setValue(maxAttendees)
+                            databaseRef.push().setValue(hours)
+                            databaseRef.push().setValue(days).addOnCompleteListener({
+                                navController.navigate(ToDoAppScreen.Entree.name)
+                            })
+                        }
+                    }
                 )
             }
         }

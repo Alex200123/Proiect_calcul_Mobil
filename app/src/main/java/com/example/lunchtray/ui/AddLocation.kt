@@ -28,17 +28,12 @@ import com.example.lunchtray.model.MenuItem.SideDishItem
 
 @Composable
 fun AddLocationMenuScreen(
-    options: List<SideDishItem>,
-
     modifier: Modifier = Modifier,
-
+    onSubmitButtonClicked: () -> Unit,
 ) {
     BaseMenuScreenAddLocations(
-        options = options,
-
-
         modifier = modifier,
-
+        onSubmitButtonClicked = onSubmitButtonClicked
     )
 }
 
