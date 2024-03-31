@@ -15,12 +15,11 @@
  */
 package com.example.lunchtray.model
 
-data class OrderUiState(
-    // Entree Selection
-    val entree: MenuItem.EntreeItem? = null,
-    val sideDish: MenuItem.SideDishItem? = null,
-    val accompaniment: MenuItem.AccompanimentItem? = null,
-    val itemTotalPrice: Double = 0.0,
-    val orderTax: Double = 0.0,
-    val orderTotalPrice: Double = 0.0
+data class LocationData(
+    var locationNameID: String,
+    var locationName: String,
+//    var addressName : String,
+//    var maxAttendees: String,
+//    var hours : String,
+//    var days : String
 )

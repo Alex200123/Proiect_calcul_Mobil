@@ -44,6 +44,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.lunchtray.datasource.DataSource
+import com.example.lunchtray.model.LocationData
 import com.example.lunchtray.ui.EntreeMenuScreen
 import com.example.lunchtray.ui.OrderViewModel
 import com.example.lunchtray.ui.AddLocationMenuScreen
@@ -64,8 +65,12 @@ import com.example.lunchtray.ui.getPasswordSignin
 import com.example.lunchtray.ui.getRepeatPassword
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.values
 
 
 enum class ToDoAppScreen(@StringRes val title: Int) {
@@ -117,8 +122,9 @@ fun ToDoApp() {
     val currentScreen = ToDoAppScreen.valueOf(
         backStackEntry?.destination?.route ?: ToDoAppScreen.Start.name
     )
+    var nodesInDatabase: MutableList<LocationData> = mutableListOf<LocationData>()
     // Create ViewModel
-    val viewModel: OrderViewModel = viewModel()
+
 
     Scaffold(
         topBar = {
@@ -129,7 +135,7 @@ fun ToDoApp() {
             )
         }
     ) { innerPadding ->
-        val uiState by viewModel.uiState.collectAsState()
+
 
         NavHost(
             navController = navController,
@@ -223,6 +229,45 @@ fun ToDoApp() {
             }
 
             composable(route = ToDoAppScreen.Start.name) {
+
+
+                val auth:FirebaseAuth
+                val databaseRef:DatabaseReference
+
+
+
+
+                auth = FirebaseAuth.getInstance()
+
+                databaseRef = FirebaseDatabase.getInstance().reference.
+                child("Locations").
+                child(auth.currentUser?.uid.toString()).
+                child("Location Name")
+
+
+
+                databaseRef.addValueEventListener(object:ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        nodesInDatabase.clear()
+                        for(locationSnapshot in snapshot.children)
+                        {
+                            val tempData = locationSnapshot.key?.let{
+                                LocationData(it, locationSnapshot.value.toString())
+                            }
+                            if (tempData != null) {
+                                nodesInDatabase.add(tempData)
+                            }
+
+                        }
+
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        TODO("Not yet implemented")
+                    }
+                })
+
+
                 StartOrderScreen(
                     onLocationsButtonClicked = {
                         navController.navigate(ToDoAppScreen.Entree.name)
@@ -237,12 +282,10 @@ fun ToDoApp() {
             }
 
             composable(route = ToDoAppScreen.Entree.name) {
+
                 EntreeMenuScreen(
-                    options = DataSource.entreeMenuItems,
-                    onCancelButtonClicked = {
-                        viewModel.resetOrder()
-                        navController.popBackStack(ToDoAppScreen.Start.name, inclusive = false)
-                    },
+                    locations = nodesInDatabase,
+
                     onNextButtonClicked = {
                         navController.navigate(ToDoAppScreen.SideDish.name)
                     },

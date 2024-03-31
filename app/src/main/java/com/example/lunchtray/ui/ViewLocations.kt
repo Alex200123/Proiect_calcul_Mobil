@@ -24,33 +24,19 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.lunchtray.R
 import com.example.lunchtray.datasource.DataSource
+import com.example.lunchtray.model.LocationData
 import com.example.lunchtray.model.MenuItem.EntreeItem
 
 @Composable
 fun EntreeMenuScreen(
-    options: List<EntreeItem>,
-    onCancelButtonClicked: () -> Unit,
+    locations: MutableList<LocationData>,
     onNextButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     BaseMenuScreen(
-        options = options,
+        locations = locations,
         modifier = modifier,
-        onCancelButtonClicked = onCancelButtonClicked,
         onNextButtonClicked = onNextButtonClicked
     )
 }
 
-@Preview
-@Composable
-fun EntreeMenuPreview(){
-    EntreeMenuScreen(
-        options = DataSource.entreeMenuItems,
-        onCancelButtonClicked = {},
-        onNextButtonClicked = {},
-
-        modifier = Modifier
-            .padding(dimensionResource(R.dimen.padding_medium))
-            .verticalScroll(rememberScrollState())
-    )
-}

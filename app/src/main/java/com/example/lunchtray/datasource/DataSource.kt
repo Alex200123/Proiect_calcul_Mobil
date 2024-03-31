@@ -15,7 +15,7 @@
  */
 package com.example.lunchtray.datasource
 
-import com.example.lunchtray.model.MenuItem.AccompanimentItem
+
 import com.example.lunchtray.model.MenuItem.EntreeItem
 import com.example.lunchtray.model.MenuItem.SideDishItem
 
@@ -72,21 +72,5 @@ object DataSource {
         )
     )
 
-    val accompanimentMenuItems = listOf(
-        AccompanimentItem(
-            name = "Lunch Roll",
-            description = "Fresh baked roll made in house",
-            price = 0.50,
-        ),
-        AccompanimentItem(
-            name = "Mixed Berries",
-            description = "Strawberries, blueberries, raspberries, and huckleberries",
-            price = 1.00,
-        ),
-        AccompanimentItem(
-            name = "Pickled Veggies",
-            description = "Pickled cucumbers and carrots, made in house",
-            price = 0.50,
-        )
-    )
+
 }

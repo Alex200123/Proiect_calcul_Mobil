@@ -38,11 +38,6 @@ sealed class MenuItem(
         override val price: Double
     ) : MenuItem(name, description, price)
 
-    data class AccompanimentItem(
-        override val name: String,
-        override val description: String,
-        override val price: Double
-    ) : MenuItem(name, description, price)
 
     /**
      * Getter method for price.

@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.lunchtray.R
 import com.example.lunchtray.datasource.DataSource
 import com.example.lunchtray.model.MenuItem
-import com.example.lunchtray.model.MenuItem.AccompanimentItem
+
 
 
 @Composable
@@ -44,7 +44,7 @@ fun ViewToDoListScreen(
     Column(modifier = modifier) {
         MenuScreenButtonGroup(
 
-            onCancelButtonClicked = onCancelButtonClicked,
+
             onNextButtonClicked = {
                 // Assert not null bc next button is not enabled unless selectedItem is not null.
                 onNextButtonClicked()
