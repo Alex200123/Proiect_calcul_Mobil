@@ -49,6 +49,7 @@ import com.example.lunchtray.ui.EntreeMenuScreen
 import com.example.lunchtray.ui.OrderViewModel
 import com.example.lunchtray.ui.AddLocationMenuScreen
 import com.example.lunchtray.ui.AddToDoListScreen
+import com.example.lunchtray.ui.DetailsMenuScreen
 import com.example.lunchtray.ui.SignInScreen
 import com.example.lunchtray.ui.SignUpScreen
 import com.example.lunchtray.ui.StartOrderScreen
@@ -82,7 +83,8 @@ enum class ToDoAppScreen(@StringRes val title: Int) {
     Accompaniment(title = R.string.choose_accompaniment),
     Checkout(title = R.string.order_checkout),
     ToDoView(title = R.string.ToDoView),
-    ToDoAdd(title = R.string.ToDoAdd)
+    ToDoAdd(title = R.string.ToDoAdd),
+    Details(title =  R.string.Details)
 }
 
 /**
@@ -123,6 +125,7 @@ fun ToDoApp() {
         backStackEntry?.destination?.route ?: ToDoAppScreen.Start.name
     )
     var nodesInDatabase: MutableList<LocationData> = mutableListOf<LocationData>()
+    var string_test: MutableList<String> = mutableListOf<String>()
     // Create ViewModel
 
 
@@ -241,21 +244,19 @@ fun ToDoApp() {
 
                 databaseRef = FirebaseDatabase.getInstance().reference.
                 child("Locations").
-                child(auth.currentUser?.uid.toString()).
-                child("Location Name")
+                child(auth.currentUser?.uid.toString())
+
 
 
 
                 databaseRef.addValueEventListener(object:ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        nodesInDatabase.clear()
+                        string_test.clear()
                         for(locationSnapshot in snapshot.children)
                         {
-                            val tempData = locationSnapshot.key?.let{
-                                LocationData(it, locationSnapshot.value.toString())
-                            }
+                            val tempData = locationSnapshot.key
                             if (tempData != null) {
-                                nodesInDatabase.add(tempData)
+                                string_test.add(tempData.toString())
                             }
 
                         }
@@ -266,6 +267,7 @@ fun ToDoApp() {
                         TODO("Not yet implemented")
                     }
                 })
+
 
 
                 StartOrderScreen(
@@ -290,11 +292,28 @@ fun ToDoApp() {
                         navController.navigate(ToDoAppScreen.SideDish.name)
                     },
 
+                    string_test = string_test,
+
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
-                        .padding(innerPadding)
+                        .padding(innerPadding),
+                    onDetailsButtonClicked = {
+                        //// AICI
+                        navController.navigate(ToDoAppScreen.Details.name)
+
+                    }
+
                 )
             }
+
+            composable(route = ToDoAppScreen.Details.name){
+                DetailsMenuScreen(
+                    locations = nodesInDatabase,
+                string_test = string_test,
+                modifier = Modifier,
+                )
+            }
+
 
             composable(route = ToDoAppScreen.SideDish.name) {
                 AddLocationMenuScreen(

@@ -30,13 +30,17 @@ import com.example.lunchtray.model.MenuItem.EntreeItem
 @Composable
 fun EntreeMenuScreen(
     locations: MutableList<LocationData>,
+    string_test: MutableList<String>,
     onNextButtonClicked: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDetailsButtonClicked: () -> Unit,
 ) {
     BaseMenuScreen(
         locations = locations,
+        string_test = string_test,
         modifier = modifier,
-        onNextButtonClicked = onNextButtonClicked
+        onNextButtonClicked = onNextButtonClicked,
+        onDetailsButtonClicked = onDetailsButtonClicked
     )
 }
 

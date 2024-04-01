@@ -15,6 +15,7 @@
  */
 package com.example.lunchtray.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,6 +42,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -50,17 +52,60 @@ import com.example.lunchtray.model.LocationData
 import com.example.lunchtray.model.MenuItem
 
 
-
 @Composable
 fun DataBaseLocationsColumn(
     item: MutableList<LocationData>,
-    modifier: Modifier = Modifier
+    string_test: MutableList<String>,
+    modifier: Modifier = Modifier,
+    onDetailsButtonClicked: () -> Unit ,
 ) {
-    for (i in item) {
+    for (i in string_test) {
         Text(
-            text = i.locationName,
+//            text = i.locationName,
+            text = i,
             style = MaterialTheme.typography.headlineSmall
         )
+
+
+            Button(
+                modifier = modifier,
+                // the button is enabled when the user makes a selection
+
+                onClick = onDetailsButtonClicked,
+
+                ) {
+                Text(text = "Details")
+            }
+            Button(
+                modifier = modifier,
+                // the button is enabled when the user makes a selection
+
+                onClick = onDetailsButtonClicked,
+
+                ) {
+                Text(text = "Delete")
+            }
+
+    }
+
+
+}
+
+@Composable
+fun DataBaseLocationsColumnNoDetails(
+    item: MutableList<LocationData>,
+    string_test: MutableList<String>,
+    modifier: Modifier,
+) {
+    var iterator = 0
+    for (i in string_test) {
+        Text(
+//            text = i.locationName,
+            text = i,
+            style = MaterialTheme.typography.headlineSmall
+        )
+
+
     }
 
 
@@ -68,15 +113,14 @@ fun DataBaseLocationsColumn(
 
 
 
-
 @Composable
 fun BaseMenuScreen(
     locations: MutableList<LocationData>,
+    string_test: MutableList<String>,
     modifier: Modifier = Modifier,
     onNextButtonClicked: () -> Unit ,
+    onDetailsButtonClicked: () -> Unit ,
 ) {
-
-
     Column(modifier = modifier) {
 
 
@@ -94,17 +138,43 @@ fun BaseMenuScreen(
 
             DataBaseLocationsColumn(
                 item = locations,
+                string_test = string_test,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(dimensionResource(R.dimen.padding_medium))
+                    .padding(dimensionResource(R.dimen.padding_medium)),
+                onDetailsButtonClicked = onDetailsButtonClicked
             )
 
 
     }
 
 
+}
+
+
+@Composable
+fun DetailsScreen(
+    locations: MutableList<LocationData>,
+    string_test: MutableList<String>,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+
+
+        DataBaseLocationsColumnNoDetails(
+            item = locations,
+            string_test = string_test,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(R.dimen.padding_medium)),
+
+        )
+
+
     }
 
+
+}
 
 
 
