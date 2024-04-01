@@ -16,6 +16,7 @@
  */
 package com.example.lunchtray
 
+import android.content.Context
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
@@ -115,7 +116,10 @@ fun ToDoAppBar(
 }
 
 @Composable
-fun ToDoApp() {
+fun ToDoApp(applicationContext: Context) {
+
+    var context: Context = applicationContext
+
     //Create NavController
     val navController = rememberNavController()
     // Get current back stack entry
@@ -225,6 +229,7 @@ fun ToDoApp() {
 
             composable(route = ToDoAppScreen.ToDoAdd.name){
                 AddToDoListScreen(
+                    context,
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
                         .padding(innerPadding)

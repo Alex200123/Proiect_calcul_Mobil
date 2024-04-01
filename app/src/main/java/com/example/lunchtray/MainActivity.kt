@@ -19,13 +19,25 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.lunchtray.ui.theme.LunchTrayTheme
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import java.io.File
 
 class MainActivity : ComponentActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            val permissions = arrayOf(android.Manifest.permission.RECORD_AUDIO)
+            ActivityCompat.requestPermissions(this, permissions,0)
+        }
         setContent {
             LunchTrayTheme {
-                ToDoApp()
+                ToDoApp(this)
             }
         }
     }

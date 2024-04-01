@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.example.lunchtray.ui
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,13 +38,16 @@ import androidx.compose.ui.res.dimensionResource
 import com.example.lunchtray.Audio
 
 import com.example.lunchtray.R
+import java.io.File
 
 @Composable
 fun AddToDoListScreen(
+    context: Context,
     modifier: Modifier = Modifier
     ) {
     Column(modifier = modifier) {
         AddToDoListButtonGroup(
+            context = context,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.padding_medium))
@@ -52,6 +57,7 @@ fun AddToDoListScreen(
 
 @Composable
 fun AddToDoListButtonGroup(
+    context: Context,
     modifier: Modifier = Modifier,
     ) {
 
@@ -93,17 +99,17 @@ fun AddToDoListButtonGroup(
     )
     {
 
-        Button(onClick = { myAudio.startRecording() }) {
+        Button(onClick = { myAudio.startRecording(File(context.cacheDir,R.string.audioFile.toString())) }) {
             Text(text = "Record")
         }
 
-        Button(onClick = { myAudio.stopPlaying() }) {
+        Button(onClick = { myAudio.startPlaying(context, File(context.cacheDir,R.string.audioFile.toString())) }) {
             Text(text = "Play")
         }
 
         Button(onClick = {
             myAudio.stopRecording()
-            myAudio.startPlaying()
+            myAudio.stopPlaying()
         }) {
             Text(text = "Stop")
         }
