@@ -16,7 +16,6 @@
 package com.example.lunchtray.model
 
 data class LocationData(
-    var locationNameID: String,
     var locationName: String,
     var addressName : String,
     var maxAttendees: String,

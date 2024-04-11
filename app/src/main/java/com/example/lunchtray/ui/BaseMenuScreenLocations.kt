@@ -28,6 +28,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -57,38 +58,50 @@ fun DataBaseLocationsColumn(
     item: MutableList<LocationData>,
     string_test: MutableList<String>,
     modifier: Modifier = Modifier,
-    onDetailsButtonClicked: () -> Unit ,
+    onDetailsButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit
 ) {
+    var iterator = 0
     for (i in string_test) {
-        Text(
-//            text = i.locationName,
-            text = i,
-            style = MaterialTheme.typography.headlineSmall
-        )
+        Card(
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = i,
+                    style = MaterialTheme.typography.headlineSmall
+                )
 
-
-            Button(
-                modifier = modifier,
-                // the button is enabled when the user makes a selection
-
-                onClick = onDetailsButtonClicked,
-
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                Text(text = "Details")
+                    Button(
+                        onClick = onDetailsButtonClicked
+                    ) {
+                        Text(text = "Details")
+                    }
+                    Column {
+                        Text(text = item[iterator].locationName)
+                        Text(text = item[iterator].addressName)
+                        Text(text = item[iterator].maxAttendees)
+                        Text(text = item[iterator].hours)
+                        Text(text = item[iterator].days)
+                    }
+
+
+                    Button(
+                        onClick = onDeleteButtonClicked
+                    ) {
+                        Text(text = "Delete")
+                    }
+                }
             }
-            Button(
-                modifier = modifier,
-                // the button is enabled when the user makes a selection
-
-                onClick = onDetailsButtonClicked,
-
-                ) {
-                Text(text = "Delete")
-            }
-
+        }
+        iterator++
     }
-
-
 }
 
 @Composable
@@ -120,6 +133,7 @@ fun BaseMenuScreen(
     modifier: Modifier = Modifier,
     onNextButtonClicked: () -> Unit ,
     onDetailsButtonClicked: () -> Unit ,
+    onDeleteButtonClicked: () -> Unit
 ) {
     Column(modifier = modifier) {
 
@@ -142,7 +156,8 @@ fun BaseMenuScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(dimensionResource(R.dimen.padding_medium)),
-                onDetailsButtonClicked = onDetailsButtonClicked
+                onDetailsButtonClicked = onDetailsButtonClicked,
+                onDeleteButtonClicked = onDeleteButtonClicked
             )
 
 
@@ -196,7 +211,7 @@ fun MenuScreenButtonGroup(
 
             onClick = onNextButtonClicked
         ) {
-            Text(stringResource(R.string.next).uppercase())
+            Text(stringResource(R.string.nextlocation).uppercase())
         }
     }
 }
@@ -347,8 +362,8 @@ fun SignInMenu(
     }
 }
 
-var email_signin: MutableState<String> = mutableStateOf("Email")
-var password_signin:  MutableState<String> = mutableStateOf("Pass")
+var email_signin: MutableState<String> = mutableStateOf("gegia@gmail.com")
+var password_signin:  MutableState<String> = mutableStateOf("gegia1")
 
 @Composable
 fun SignInButtonGroup(

@@ -15,32 +15,26 @@
  */
 package com.example.lunchtray.ui
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.lunchtray.R
-import com.example.lunchtray.datasource.DataSource
 import com.example.lunchtray.model.LocationData
-import com.example.lunchtray.model.MenuItem.EntreeItem
 
 @Composable
-fun EntreeMenuScreen(
+fun ViewLocationsScreen(
     locations: MutableList<LocationData>,
     string_test: MutableList<String>,
     onNextButtonClicked: () -> Unit,
     modifier: Modifier = Modifier,
     onDetailsButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit
 ) {
     BaseMenuScreen(
         locations = locations,
         string_test = string_test,
         modifier = modifier,
         onNextButtonClicked = onNextButtonClicked,
-        onDetailsButtonClicked = onDetailsButtonClicked
+        onDetailsButtonClicked = onDetailsButtonClicked,
+        onDeleteButtonClicked = onDeleteButtonClicked
     )
 }
 

@@ -17,7 +17,6 @@
 package com.example.lunchtray
 
 import android.content.Context
-import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -32,22 +31,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.lunchtray.datasource.DataSource
 import com.example.lunchtray.model.LocationData
-import com.example.lunchtray.ui.EntreeMenuScreen
-import com.example.lunchtray.ui.OrderViewModel
+import com.example.lunchtray.ui.ViewLocationsScreen
 import com.example.lunchtray.ui.AddLocationMenuScreen
 import com.example.lunchtray.ui.AddToDoListScreen
 import com.example.lunchtray.ui.DetailsMenuScreen
@@ -65,14 +58,12 @@ import com.example.lunchtray.ui.getMaxAttendees
 import com.example.lunchtray.ui.getPassword
 import com.example.lunchtray.ui.getPasswordSignin
 import com.example.lunchtray.ui.getRepeatPassword
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.values
 
 
 enum class ToDoAppScreen(@StringRes val title: Int) {
@@ -114,6 +105,9 @@ fun ToDoAppBar(
         }
     )
 }
+
+
+
 
 @Composable
 fun ToDoApp(applicationContext: Context) {
@@ -263,7 +257,44 @@ fun ToDoApp(applicationContext: Context) {
                             if (tempData != null) {
                                 string_test.add(tempData.toString())
                             }
+                            var iterator = 1
+                            var locationName = ""
+                            var addressName = ""
+                            var maxAttendees = ""
+                            var hours = ""
+                            var days = ""
+                            for (valueSnapshot in locationSnapshot.children) {
+                                // Accesezi fiecare valoare și copil din nodul locationSnapshot
+                                val value = valueSnapshot.value.toString()
 
+                                if(iterator == 1)
+                                {
+                                    locationName = value
+                                }
+                                else if(iterator == 2)
+                                {
+                                    addressName = value
+                                }
+                                else if(iterator == 3)
+                                {
+                                    maxAttendees = value
+                                }
+                                else if(iterator == 4)
+                                {
+                                    hours = value
+                                }
+                                else if(iterator == 5)
+                                {
+                                    days = value
+                                }
+                                iterator++
+                            }
+                            var locationData = LocationData(locationName,
+                                                addressName,
+                                                maxAttendees,
+                                                hours,
+                                                days)
+                            nodesInDatabase.add(locationData)
                         }
 
                     }
@@ -290,7 +321,10 @@ fun ToDoApp(applicationContext: Context) {
 
             composable(route = ToDoAppScreen.Entree.name) {
 
-                EntreeMenuScreen(
+
+
+
+                ViewLocationsScreen(
                     locations = nodesInDatabase,
 
                     onNextButtonClicked = {
@@ -303,8 +337,11 @@ fun ToDoApp(applicationContext: Context) {
                         .verticalScroll(rememberScrollState())
                         .padding(innerPadding),
                     onDetailsButtonClicked = {
-                        //// AICI
-                        navController.navigate(ToDoAppScreen.Details.name)
+
+
+
+                    },
+                    onDeleteButtonClicked = {
 
                     }
 
@@ -355,9 +392,11 @@ fun ToDoApp(applicationContext: Context) {
                             databaseRef.push().setValue(days).addOnCompleteListener({
                                 navController.navigate(ToDoAppScreen.Entree.name)
                             })
+
                         }
                     }
                 )
+
             }
         }
     }
