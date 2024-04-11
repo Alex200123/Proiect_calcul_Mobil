@@ -264,7 +264,7 @@ fun ToDoApp(applicationContext: Context) {
                             var hours = ""
                             var days = ""
                             for (valueSnapshot in locationSnapshot.children) {
-                                // Accesezi fiecare valoare și copil din nodul locationSnapshot
+
                                 val value = valueSnapshot.value.toString()
 
                                 if(iterator == 1)
@@ -342,7 +342,7 @@ fun ToDoApp(applicationContext: Context) {
 
                     },
                     onDeleteButtonClicked = {
-
+                        navController.navigate(ToDoAppScreen.Start.name)
                     }
 
                 )

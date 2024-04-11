@@ -15,6 +15,8 @@
  */
 package com.example.lunchtray.ui
 
+import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -51,7 +53,75 @@ import androidx.compose.ui.unit.dp
 import com.example.lunchtray.R
 import com.example.lunchtray.model.LocationData
 import com.example.lunchtray.model.MenuItem
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
+
+
+//@Composable
+//fun DataBaseLocationsColumn(
+//    item: MutableList<LocationData>,
+//    string_test: MutableList<String>,
+//    modifier: Modifier = Modifier,
+//    onDetailsButtonClicked: () -> Unit,
+//    onDeleteButtonClicked: () -> Unit
+//) {
+//    var iterator = 0
+//    for (i in string_test) {
+//        Card(
+//            modifier = Modifier.padding(8.dp)
+//        ) {
+//            Column(
+//                modifier = Modifier.padding(16.dp)
+//            ) {
+//                Text(
+//                    text = i,
+//                    style = MaterialTheme.typography.headlineSmall
+//                )
+//
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.SpaceBetween
+//                ) {
+//                    Button(
+//                        onClick = onDetailsButtonClicked
+//                    ) {
+//                        Text(text = "Details")
+//                    }
+//                    Column {
+//                        Text(text = item[iterator].locationName)
+//                        Text(text = item[iterator].addressName)
+//                        Text(text = item[iterator].maxAttendees)
+//                        Text(text = item[iterator].hours)
+//                        Text(text = item[iterator].days)
+//                    }
+//
+//
+//                    Button(
+//                        onClick = {
+//                            val auth: FirebaseAuth
+//                            val databaseRef: DatabaseReference
+//
+//
+//
+//
+//                            auth = FirebaseAuth.getInstance()
+//
+//                            databaseRef = FirebaseDatabase.getInstance().reference.
+//                            child("Locations").
+//                            child(auth.currentUser?.uid.toString()).
+//
+//                        }
+//                    ) {
+//                        Text(text = "Delete")
+//                    }
+//                }
+//            }
+//        }
+//        iterator++
+//    }
+//}
 
 @Composable
 fun DataBaseLocationsColumn(
@@ -91,9 +161,20 @@ fun DataBaseLocationsColumn(
                         Text(text = item[iterator].days)
                     }
 
-
                     Button(
-                        onClick = onDeleteButtonClicked
+                        onClick = {
+
+                            val auth = FirebaseAuth.getInstance()
+                            val databaseRef = FirebaseDatabase.getInstance().reference
+                                .child("Locations")
+                                .child(auth.currentUser?.uid.toString())
+                                .child(i)
+
+                            databaseRef.removeValue().addOnSuccessListener {
+
+                                onDeleteButtonClicked()
+                            }
+                        }
                     ) {
                         Text(text = "Delete")
                     }
@@ -103,6 +184,7 @@ fun DataBaseLocationsColumn(
         iterator++
     }
 }
+
 
 @Composable
 fun DataBaseLocationsColumnNoDetails(
