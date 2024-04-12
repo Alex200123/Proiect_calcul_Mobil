@@ -18,6 +18,7 @@ package com.example.lunchtray.ui
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,10 +29,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -47,8 +50,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.lunchtray.R
 import com.example.lunchtray.model.LocationData
@@ -57,71 +63,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
-
-
-//@Composable
-//fun DataBaseLocationsColumn(
-//    item: MutableList<LocationData>,
-//    string_test: MutableList<String>,
-//    modifier: Modifier = Modifier,
-//    onDetailsButtonClicked: () -> Unit,
-//    onDeleteButtonClicked: () -> Unit
-//) {
-//    var iterator = 0
-//    for (i in string_test) {
-//        Card(
-//            modifier = Modifier.padding(8.dp)
-//        ) {
-//            Column(
-//                modifier = Modifier.padding(16.dp)
-//            ) {
-//                Text(
-//                    text = i,
-//                    style = MaterialTheme.typography.headlineSmall
-//                )
-//
-//                Row(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    horizontalArrangement = Arrangement.SpaceBetween
-//                ) {
-//                    Button(
-//                        onClick = onDetailsButtonClicked
-//                    ) {
-//                        Text(text = "Details")
-//                    }
-//                    Column {
-//                        Text(text = item[iterator].locationName)
-//                        Text(text = item[iterator].addressName)
-//                        Text(text = item[iterator].maxAttendees)
-//                        Text(text = item[iterator].hours)
-//                        Text(text = item[iterator].days)
-//                    }
-//
-//
-//                    Button(
-//                        onClick = {
-//                            val auth: FirebaseAuth
-//                            val databaseRef: DatabaseReference
-//
-//
-//
-//
-//                            auth = FirebaseAuth.getInstance()
-//
-//                            databaseRef = FirebaseDatabase.getInstance().reference.
-//                            child("Locations").
-//                            child(auth.currentUser?.uid.toString()).
-//
-//                        }
-//                    ) {
-//                        Text(text = "Delete")
-//                    }
-//                }
-//            }
-//        }
-//        iterator++
-//    }
-//}
 
 @Composable
 fun DataBaseLocationsColumn(
@@ -132,56 +73,71 @@ fun DataBaseLocationsColumn(
     onDeleteButtonClicked: () -> Unit
 ) {
     var iterator = 0
-    for (i in string_test) {
-        Card(
-            modifier = Modifier.padding(8.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
+    Column(
+        modifier = modifier.padding(8.dp)
+    ) {
+        for (i in string_test) {
+            Card(
+                modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
             ) {
-                Text(
-                    text = i,
-                    style = MaterialTheme.typography.headlineSmall
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                Column(
+                    modifier = Modifier.padding(16.dp)
                 ) {
-                    Button(
-                        onClick = onDetailsButtonClicked
+                    Text(
+                        text = i,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(text = "Details")
-                    }
-                    Column {
-                        Text(text = item[iterator].locationName)
-                        Text(text = item[iterator].addressName)
-                        Text(text = item[iterator].maxAttendees)
-                        Text(text = item[iterator].hours)
-                        Text(text = item[iterator].days)
-                    }
-
-                    Button(
-                        onClick = {
-
-                            val auth = FirebaseAuth.getInstance()
-                            val databaseRef = FirebaseDatabase.getInstance().reference
-                                .child("Locations")
-                                .child(auth.currentUser?.uid.toString())
-                                .child(i)
-
-                            databaseRef.removeValue().addOnSuccessListener {
-
-                                onDeleteButtonClicked()
-                            }
+                        Column {
+                            Text(
+                                text = "Location Name: ${item[iterator].locationName}",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = "Address: ${item[iterator].addressName}",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = "Max Attendees: ${item[iterator].maxAttendees}",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = "Hours: ${item[iterator].hours}",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = "Days: ${item[iterator].days}",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
                         }
-                    ) {
-                        Text(text = "Delete")
+                        Button(
+                            onClick = {
+
+                                val auth = FirebaseAuth.getInstance()
+                                val databaseRef = FirebaseDatabase.getInstance().reference
+                                    .child("Locations")
+                                    .child(auth.currentUser?.uid.toString())
+                                    .child(i)
+
+                                databaseRef.removeValue().addOnSuccessListener {
+                                    onDeleteButtonClicked()
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp)
+                        ) {
+                            Text(text = "Delete")
+                        }
                     }
                 }
             }
+            iterator++
         }
-        iterator++
     }
 }
 
@@ -289,7 +245,7 @@ fun MenuScreenButtonGroup(
 
         Button(
             modifier = Modifier.weight(1f),
-            // the button is enabled when the user makes a selection
+
 
             onClick = onNextButtonClicked
         ) {
@@ -318,11 +274,11 @@ fun BaseMenuScreenAddLocations(
     }
 }
 
-var locationName: MutableState<String> = mutableStateOf("Location Name")
-var addressName:  MutableState<String> = mutableStateOf("Address Name")
-var maxAttendees: MutableState<String> = mutableStateOf("Max Attendees")
-var hours:  MutableState<String> = mutableStateOf("Hours")
-var days:  MutableState<String> = mutableStateOf("Days")
+var locationName: MutableState<String> = mutableStateOf("")
+var addressName:  MutableState<String> = mutableStateOf("")
+var maxAttendees: MutableState<String> = mutableStateOf("")
+var hours:  MutableState<String> = mutableStateOf("")
+var days:  MutableState<String> = mutableStateOf("")
 
 @Composable
 fun MenuScreenButtonGroupAdd(
@@ -330,69 +286,72 @@ fun MenuScreenButtonGroupAdd(
     onSubmitButtonClicked: () -> Unit,
 ) {
 
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
-    ){
-        TextField(value = locationName.value, onValueChange = { locationName.value = it } )
+    Card(
+        modifier = modifier.padding(dimensionResource(R.dimen.padding_medium)),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium)),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
+        ) {
+            TextField(
+                value = locationName.value,
+                onValueChange = { locationName.value = it },
+                placeholder = { Text("Location Name") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            TextField(
+                value = addressName.value,
+                onValueChange = { addressName.value = it },
+                placeholder = { Text("Address Name") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            TextField(
+                value = maxAttendees.value,
+                onValueChange = { maxAttendees.value = it },
+                placeholder = { Text("Max Attendees") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                TextField(
+                    value = hours.value,
+                    onValueChange = { hours.value = it },
+                    placeholder = { Text("Hours per day") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier
+                        .width(150.dp)
+                        .height(50.dp)
+                )
+                TextField(
+                    value = days.value,
+                    onValueChange = { days.value = it },
+                    placeholder = { Text("Days") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier
+                        .width(100.dp)
+                        .height(50.dp)
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Button(
+                    onClick = onSubmitButtonClicked,
+                    modifier = Modifier.padding(vertical = dimensionResource(R.dimen.padding_medium))
+                ) {
+                    Text(text = "Submit")
+                }
+            }
         }
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
-    ){
-        TextField(value = addressName.value, onValueChange = { addressName.value = it })
     }
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
-    ){
-        TextField(value = maxAttendees.value, onValueChange = { maxAttendees.value = it }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
-    }
-
-    val selectedOption = remember { mutableStateOf("") }
-
-    Row {
-        RadioButton(
-            selected = selectedOption.value == "Birthday",
-            onClick = { selectedOption.value = "Birthday" }
-        )
-        Text("Birthday")
-
-        RadioButton(
-            selected = selectedOption.value == "Concert",
-            onClick = { selectedOption.value = "Concert" }
-        )
-        Text("Concert")
-
-        RadioButton(
-            selected = selectedOption.value == "Party",
-            onClick = { selectedOption.value = "Party" }
-        )
-        Text("Party")
-    }
-
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
-    ){
-        TextField(value = hours.value, onValueChange = { hours.value = it }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),  modifier = Modifier
-            .width(100.dp)
-            .height(50.dp))
-        Spacer(modifier = Modifier.width(100.dp))
-        TextField(value = days.value, onValueChange = { days.value = it }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),  modifier = Modifier
-            .width(100.dp)
-            .height(50.dp))
-    }
-
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.Center,
-    ){
-        Button(onClick =onSubmitButtonClicked) {
-            Text(text = "Submit")
-        }
-    }
-  }
+}
 
 fun getLocationName(): String
 {
@@ -427,12 +386,7 @@ fun SignInMenu(
     var selectedItemName by rememberSaveable { mutableStateOf("") }
 
     Column(modifier = modifier) {
-        options.forEach { item ->
-            val onClick = {
-                selectedItemName = item.name
-            }
 
-        }
 
         SignInButtonGroup(
             modifier = Modifier
@@ -453,34 +407,57 @@ fun SignInButtonGroup(
     onSignUpButtonClicked: () -> Unit,
     onSubmitButtonClicked: () -> Unit,
 ) {
+    var passwordVisibility by remember { mutableStateOf(false) }
 
-
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
-    ){
-        TextField(value = email_signin.value, onValueChange = { email_signin.value = it } )
-    }
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
-    ){
-        TextField(value = password_signin.value, onValueChange = { password_signin.value = it })
-    }
-
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.Center,
-    ){
-        Button(onClick = onSubmitButtonClicked){
-            Text(text = "Submit")
-        }
-        Button(onClick = onSignUpButtonClicked) {
-            Text(text = "SignUp")
+    Card(
+        modifier = modifier.padding(dimensionResource(R.dimen.padding_medium))
+    ) {
+        Column(
+            modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium)),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
+        ) {
+            TextField(
+                value = email_signin.value,
+                onValueChange = { email_signin.value = it },
+                placeholder = { Text("Email") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            TextField(
+                value = password_signin.value,
+                onValueChange = { password_signin.value = it },
+                visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                placeholder = { Text("Password") },
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                        if (passwordVisibility) {
+                            Text(text = "Hide")
+                        } else {
+                            Text(text = "Look")
+                        }
+                    }
+                }
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Button(
+                    onClick = onSubmitButtonClicked,
+                    modifier = Modifier.weight(1f).padding(horizontal = dimensionResource(R.dimen.padding_medium))
+                ) {
+                    Text(text = "Submit")
+                }
+                Button(
+                    onClick = onSignUpButtonClicked,
+                    modifier = Modifier.weight(1f).padding(horizontal = dimensionResource(R.dimen.padding_medium))
+                ) {
+                    Text(text = "SignUp")
+                }
+            }
         }
     }
 }
-
 fun getEmailSignin(): String
 {
     return email_signin.value
@@ -499,15 +476,9 @@ fun SignUpMenu(
     onSubmitButtonClicked: () -> Unit,
     ) {
 
-    var selectedItemName by rememberSaveable { mutableStateOf("") }
+
 
     Column(modifier = modifier) {
-        options.forEach { item ->
-            val onClick = {
-                selectedItemName = item.name
-            }
-
-        }
 
         SignUpButtonGroup(
             modifier = Modifier
@@ -518,45 +489,76 @@ fun SignUpMenu(
     }
 }
 
-var email: MutableState<String> = mutableStateOf("Email")
-var password:  MutableState<String> = mutableStateOf("Pass")
-var repeat_password :  MutableState<String> = mutableStateOf("Repeat")
+var email: MutableState<String> = mutableStateOf("")
+var password:  MutableState<String> = mutableStateOf("")
+var repeat_password :  MutableState<String> = mutableStateOf("")
+
 @Composable
 fun SignUpButtonGroup(
     modifier: Modifier = Modifier,
     onSubmitButtonClicked: () -> Unit,
 ) {
-//    var email by remember { mutableStateOf("Email") }
-//    var password by remember { mutableStateOf("Password") }
-//    var repeat_password by remember { mutableStateOf("Repeat Password") }
+    var passwordVisibility by remember { mutableStateOf(false) }
 
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
-    ){
-        TextField(value = email.value, onValueChange = { email.value = it } )
-    }
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
-    ){
-        TextField(value = password.value, onValueChange = { password.value = it  })
-    }
-
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
-    ){
-        TextField(value = repeat_password.value, onValueChange = { repeat_password.value = it  })
-    }
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.Center,
-    ){
-        Button(onClick = onSubmitButtonClicked) {
-            Text(text = "Submit")
+    Card(
+        modifier = modifier.padding(dimensionResource(R.dimen.padding_medium))
+    ) {
+        Column(
+            modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium)),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
+        ) {
+            TextField(
+                value = email.value,
+                onValueChange = { email.value = it },
+                placeholder = { Text("Email") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            TextField(
+                value = password.value,
+                onValueChange = { password.value = it },
+                visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                placeholder = { Text("Password") },
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                        if (passwordVisibility) {
+                            Text(text = "Hide")
+                        } else {
+                            Text(text = "Look")
+                        }
+                    }
+                }
+            )
+            TextField(
+                value = repeat_password.value,
+                onValueChange = { repeat_password.value = it },
+                visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                placeholder = { Text("Repeat Password") },
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                        if (passwordVisibility) {
+                            Text(text = "Hide")
+                        } else {
+                            Text(text = "Look")
+                        }
+                    }
+                }
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Button(
+                    onClick = onSubmitButtonClicked,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = dimensionResource(R.dimen.padding_medium))
+                ) {
+                    Text(text = "Submit")
+                }
+            }
         }
-
     }
 }
 

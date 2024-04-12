@@ -46,7 +46,7 @@ import com.example.lunchtray.ui.AddToDoListScreen
 import com.example.lunchtray.ui.DetailsMenuScreen
 import com.example.lunchtray.ui.SignInScreen
 import com.example.lunchtray.ui.SignUpScreen
-import com.example.lunchtray.ui.StartOrderScreen
+import com.example.lunchtray.ui.SelectActivityScreen
 import com.example.lunchtray.ui.ViewToDoListScreen
 import com.example.lunchtray.ui.getAddressName
 import com.example.lunchtray.ui.getDays
@@ -71,7 +71,7 @@ enum class ToDoAppScreen(@StringRes val title: Int) {
     SignUp(title = R.string.signup),
     Start(title = R.string.app_name),
     Entree(title = R.string.choose_entree),
-    SideDish(title = R.string.choose_side_dish),
+    AddLocation(title = R.string.choose_side_dish),
     Accompaniment(title = R.string.choose_accompaniment),
     Checkout(title = R.string.order_checkout),
     ToDoView(title = R.string.ToDoView),
@@ -114,17 +114,17 @@ fun ToDoApp(applicationContext: Context) {
 
     var context: Context = applicationContext
 
-    //Create NavController
+
     val navController = rememberNavController()
-    // Get current back stack entry
+
     val backStackEntry by navController.currentBackStackEntryAsState()
-    // Get the name of the current screen
+
     val currentScreen = ToDoAppScreen.valueOf(
         backStackEntry?.destination?.route ?: ToDoAppScreen.Start.name
     )
     var nodesInDatabase: MutableList<LocationData> = mutableListOf<LocationData>()
     var string_test: MutableList<String> = mutableListOf<String>()
-    // Create ViewModel
+
 
 
     Scaffold(
@@ -306,7 +306,7 @@ fun ToDoApp(applicationContext: Context) {
 
 
 
-                StartOrderScreen(
+                SelectActivityScreen(
                     onLocationsButtonClicked = {
                         navController.navigate(ToDoAppScreen.Entree.name)
                     },
@@ -328,7 +328,7 @@ fun ToDoApp(applicationContext: Context) {
                     locations = nodesInDatabase,
 
                     onNextButtonClicked = {
-                        navController.navigate(ToDoAppScreen.SideDish.name)
+                        navController.navigate(ToDoAppScreen.AddLocation.name)
                     },
 
                     string_test = string_test,
@@ -357,7 +357,7 @@ fun ToDoApp(applicationContext: Context) {
             }
 
 
-            composable(route = ToDoAppScreen.SideDish.name) {
+            composable(route = ToDoAppScreen.AddLocation.name) {
                 AddLocationMenuScreen(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
@@ -390,7 +390,7 @@ fun ToDoApp(applicationContext: Context) {
                             databaseRef.push().setValue(maxAttendees)
                             databaseRef.push().setValue(hours)
                             databaseRef.push().setValue(days).addOnCompleteListener({
-                                navController.navigate(ToDoAppScreen.Entree.name)
+                                navController.navigate(ToDoAppScreen.Start.name)
                             })
 
                         }
