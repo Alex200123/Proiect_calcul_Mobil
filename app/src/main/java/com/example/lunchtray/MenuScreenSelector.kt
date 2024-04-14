@@ -40,6 +40,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.lunchtray.datasource.DataSource
 import com.example.lunchtray.model.LocationData
+import com.example.lunchtray.model.TaskData
 import com.example.lunchtray.ui.ViewLocationsScreen
 import com.example.lunchtray.ui.AddLocationMenuScreen
 import com.example.lunchtray.ui.AddToDoListScreen
@@ -52,12 +53,15 @@ import com.example.lunchtray.ui.getAddressName
 import com.example.lunchtray.ui.getDays
 import com.example.lunchtray.ui.getEmail
 import com.example.lunchtray.ui.getEmailSignin
+import com.example.lunchtray.ui.getEntryName
 import com.example.lunchtray.ui.getHours
+import com.example.lunchtray.ui.getItemName
 import com.example.lunchtray.ui.getLocationName
 import com.example.lunchtray.ui.getMaxAttendees
 import com.example.lunchtray.ui.getPassword
 import com.example.lunchtray.ui.getPasswordSignin
 import com.example.lunchtray.ui.getRepeatPassword
+import com.example.lunchtray.ui.getSelectedLocation
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -125,7 +129,10 @@ fun ToDoApp(applicationContext: Context) {
     var nodesInDatabase: MutableList<LocationData> = mutableListOf<LocationData>()
     var string_test: MutableList<String> = mutableListOf<String>()
 
+    var locationsForward: MutableList<String> = mutableListOf<String>()
 
+    var toDoNodes: MutableList<TaskData> = mutableListOf<TaskData>()
+    var toDoList: MutableList<String> = mutableListOf<String>()
 
     Scaffold(
         topBar = {
@@ -154,7 +161,6 @@ fun ToDoApp(applicationContext: Context) {
                     onSubmitButtonClicked = {
                         val email:String = getEmailSignin().trim()
                         val password: String = getPasswordSignin().trim()
-
 
                         val auth:FirebaseAuth
 
@@ -206,28 +212,89 @@ fun ToDoApp(applicationContext: Context) {
                                     })
                             }
                         }
-
-
                     }
                 )
             }
 
             composable(route = ToDoAppScreen.ToDoView.name){
+
+                val auth:FirebaseAuth
+                val databaseRef:DatabaseReference
+
+                auth = FirebaseAuth.getInstance()
+
+                databaseRef = FirebaseDatabase.getInstance().reference.
+                child("Locations").
+                child(auth.currentUser?.uid.toString())
+
+                databaseRef.addValueEventListener(object:ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        locationsForward.clear()
+                        for(locationSnapshot in snapshot.children)
+                        {
+                            val tempData = locationSnapshot.key
+                            if (tempData != null) {
+                                locationsForward.add(tempData.toString())
+                            }
+
+                        }
+
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        TODO("Not yet implemented")
+                    }
+                })
+
                 ViewToDoListScreen(
+                    ToDos = toDoNodes,
+                    ToDoList = toDoList,
+                    onDeleteButtonClicked = {},
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
                         .padding(innerPadding),
-                    onCancelButtonClicked = { navController.navigate(ToDoAppScreen.Start.name) },
                     onNextButtonClicked = { navController.navigate(ToDoAppScreen.ToDoAdd.name)})
             }
 
             composable(route = ToDoAppScreen.ToDoAdd.name){
                 AddToDoListScreen(
-                    context,
+                    locations = locationsForward,
+                    context = context,
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
                         .padding(innerPadding)
-                )
+
+                ) {
+                    val auth: FirebaseAuth
+                    val databaseRef: DatabaseReference
+
+
+                    val ToDo = getEntryName().trim()
+                    val task = getItemName().trim()
+                    val location = getSelectedLocation().trim()
+
+                    auth = FirebaseAuth.getInstance()
+
+                    databaseRef = FirebaseDatabase.getInstance().reference.child("ToDo")
+                        .child(auth.currentUser?.uid.toString()).child(ToDo)
+
+                    if (ToDo.isNotEmpty() &&
+                        task.isNotEmpty() &&
+                        location.isNotEmpty()
+                    ) {
+                        databaseRef.push().setValue(ToDo)
+
+                        val databaseRefTasks =
+                            FirebaseDatabase.getInstance().reference.child("ToDo")
+                                .child(auth.currentUser?.uid.toString()).child(ToDo).child("Tasks")
+
+                        databaseRefTasks.push().setValue(task)
+
+                        databaseRef.push().setValue(location).addOnCompleteListener {
+                            navController.navigate(ToDoAppScreen.Start.name)
+                        }
+                    }
+                }
             }
 
             composable(route = ToDoAppScreen.Start.name) {
@@ -236,8 +303,7 @@ fun ToDoApp(applicationContext: Context) {
                 val auth:FirebaseAuth
                 val databaseRef:DatabaseReference
 
-
-
+                val databaseRefToDo:DatabaseReference
 
                 auth = FirebaseAuth.getInstance()
 
@@ -245,8 +311,9 @@ fun ToDoApp(applicationContext: Context) {
                 child("Locations").
                 child(auth.currentUser?.uid.toString())
 
-
-
+                databaseRefToDo = FirebaseDatabase.getInstance().reference.
+                child("ToDo").
+                child(auth.currentUser?.uid.toString())
 
                 databaseRef.addValueEventListener(object:ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
@@ -304,7 +371,59 @@ fun ToDoApp(applicationContext: Context) {
                     }
                 })
 
+                databaseRefToDo.addValueEventListener(object:ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        toDoList.clear()
+                        for(toDoSnapshot in snapshot.children)
+                        {
+                            val tempData = toDoSnapshot.key
+                            if (tempData != null) {
+                                toDoList.add(tempData.toString())
+                            }
+                            var iterator = 1
+                            var ToDo = ""
+                            var location = ""
+                            var tasks: MutableList<String> = mutableListOf<String>()
 
+                            for (valueSnapshot in toDoSnapshot.children) {
+
+                                val value = valueSnapshot.value.toString()
+
+                                if(iterator == 1)
+                                {
+                                    ToDo = value
+                                }
+                                else if(iterator == 2)
+                                {
+                                    location = value
+                                }
+                                else if(iterator == 3)
+                                {
+                                    for(task in valueSnapshot.children)
+                                    {
+                                        val temp = task.value.toString()
+
+                                        tasks.add(temp)
+
+                                    }
+                                }
+
+                                iterator++
+                            }
+                            var toDoData = TaskData(ToDo,
+                                location,
+                                tasks)
+
+                            toDoNodes.add(toDoData)
+
+                        }
+
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        TODO("Not yet implemented")
+                    }
+                })
 
                 SelectActivityScreen(
                     onLocationsButtonClicked = {
@@ -320,9 +439,6 @@ fun ToDoApp(applicationContext: Context) {
             }
 
             composable(route = ToDoAppScreen.Entree.name) {
-
-
-
 
                 ViewLocationsScreen(
                     locations = nodesInDatabase,
@@ -351,8 +467,8 @@ fun ToDoApp(applicationContext: Context) {
             composable(route = ToDoAppScreen.Details.name){
                 DetailsMenuScreen(
                     locations = nodesInDatabase,
-                string_test = string_test,
-                modifier = Modifier,
+                    string_test = string_test,
+                    modifier = Modifier,
                 )
             }
 

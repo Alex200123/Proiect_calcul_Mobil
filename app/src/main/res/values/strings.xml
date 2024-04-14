@@ -35,5 +35,6 @@
     <string name="submit">Submit</string>
     <string name="ToDoView">ToDo View</string>
     <string name="ToDoAdd">ToDo Add</string>
+    <string name="AddNewToDo">"Add New ToDo"</string>
     <string name="audioFile">"audio.mp3"</string>
 </resources>

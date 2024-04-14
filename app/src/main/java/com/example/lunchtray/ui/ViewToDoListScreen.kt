@@ -15,11 +15,19 @@
  */
 package com.example.lunchtray.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,24 +35,119 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.lunchtray.R
 import com.example.lunchtray.datasource.DataSource
 import com.example.lunchtray.model.MenuItem
+import com.example.lunchtray.model.TaskData
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
+@Composable
+fun MenuButton(
 
+    onNextButtonClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+
+    ) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
+    ){
+
+        Button(
+            modifier = Modifier.weight(1f),
+            onClick = onNextButtonClicked
+        ) {
+            Text(stringResource(R.string.AddNewToDo).uppercase())
+        }
+    }
+}
+
+@Composable
+fun DataBaseToDosColumn(
+    item: MutableList<TaskData>,
+    ToDoLists: MutableList<String>,
+    modifier: Modifier = Modifier,
+    onDeleteButtonClicked: () -> Unit
+) {
+    var iterator = 0
+    Column(
+        modifier = modifier.padding(8.dp)
+    ) {
+        for (i in ToDoLists) {
+            Card(
+                modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = i,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text(
+                                text = "ToDo: ${item[iterator].taskName}",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = "Location Name: ${item[iterator].location}",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            for(task in item[iterator].tasks) {
+                                Text(
+                                    text = "Task: $task",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                        }
+                        Button(
+                            onClick = {
+
+                                val auth = FirebaseAuth.getInstance()
+                                val databaseRef = FirebaseDatabase.getInstance().reference
+                                    .child("Locations")
+                                    .child(auth.currentUser?.uid.toString())
+                                    .child(i)
+
+                                databaseRef.removeValue().addOnSuccessListener {
+                                    onDeleteButtonClicked()
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp)
+                        ) {
+                            Text(text = "Delete")
+                        }
+                    }
+                }
+            }
+            iterator++
+        }
+    }
+}
 
 @Composable
 fun ViewToDoListScreen(
-    onCancelButtonClicked: () -> Unit,
+    ToDos: MutableList<TaskData>,
+    ToDoList: MutableList<String>,
     onNextButtonClicked: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDeleteButtonClicked: () -> Unit
 ) {
 
+
     Column(modifier = modifier) {
-        MenuScreenButtonGroup(
-
-
+        MenuButton(
             onNextButtonClicked = {
                 // Assert not null bc next button is not enabled unless selectedItem is not null.
                 onNextButtonClicked()
@@ -53,17 +156,18 @@ fun ViewToDoListScreen(
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.padding_medium))
         )
-    }
-}
 
-@Preview
-@Composable
-fun ViewToDoListPreview(){
-    ViewToDoListScreen(
-        onNextButtonClicked = {},
-        onCancelButtonClicked = {},
-        modifier = Modifier
-            .padding(dimensionResource(R.dimen.padding_medium))
-            .verticalScroll(rememberScrollState())
-    )
+        DataBaseToDosColumn(
+            item = ToDos,
+            ToDoLists = ToDoList,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(R.dimen.padding_medium)),
+            onDeleteButtonClicked = onDeleteButtonClicked
+        )
+
+    }
+
+
+
 }
