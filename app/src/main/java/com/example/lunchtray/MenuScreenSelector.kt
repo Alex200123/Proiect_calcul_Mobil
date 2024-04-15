@@ -16,7 +16,10 @@
  */
 package com.example.lunchtray
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -35,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.core.app.NotificationCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -56,13 +60,13 @@ import com.example.lunchtray.ui.getEmail
 import com.example.lunchtray.ui.getEmailSignin
 import com.example.lunchtray.ui.getEntryName
 import com.example.lunchtray.ui.getHours
-import com.example.lunchtray.ui.getItemName
 import com.example.lunchtray.ui.getLocationName
 import com.example.lunchtray.ui.getMaxAttendees
 import com.example.lunchtray.ui.getPassword
 import com.example.lunchtray.ui.getPasswordSignin
 import com.example.lunchtray.ui.getRepeatPassword
 import com.example.lunchtray.ui.getSelectedLocation
+import com.example.lunchtray.ui.getTasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -240,7 +244,6 @@ fun ToDoApp(applicationContext: Context) {
                     child(auth.currentUser?.uid.toString())
 
 
-
                         databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {
                                 locationsForward.clear()
@@ -283,7 +286,7 @@ fun ToDoApp(applicationContext: Context) {
 
 
                     val ToDo = getEntryName().trim()
-                    val task = getItemName().trim()
+                    val tasks = getTasks()
                     val location = getSelectedLocation().trim()
 
                     auth = FirebaseAuth.getInstance()
@@ -291,20 +294,56 @@ fun ToDoApp(applicationContext: Context) {
                     databaseRef = FirebaseDatabase.getInstance().reference.child("ToDo")
                         .child(auth.currentUser?.uid.toString()).child(ToDo)
 
+                    var taskEmpty = true
+
+                    for(task in tasks)
+                    {
+                        if(task.value.isEmpty())
+                        {
+                            taskEmpty = false
+                            break
+                        }
+                    }
+
                     if (ToDo.isNotEmpty() &&
-                        task.isNotEmpty() &&
+                        taskEmpty &&
                         location.isNotEmpty()
                     ) {
                         databaseRef.push().setValue(ToDo)
 
-                        val databaseRefTasks =
-                            FirebaseDatabase.getInstance().reference.child("ToDo")
-                                .child(auth.currentUser?.uid.toString()).child(ToDo).child("Tasks")
 
-                        databaseRefTasks.push().setValue(task)
+                        for(task in tasks) {
+                            databaseRef.child("Tasks").child(task.value).push().setValue(0)
+                        }
 
                         databaseRef.push().setValue(location).addOnCompleteListener {
+
+                            // NotificationManager to manage notifications
+                            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+                            // Create a notification channel for devices running Android Oreo and above
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                val channelId = "todo_add_notification"
+                                val channelName = "Add ToDo Notifications"
+                                val importance = NotificationManager.IMPORTANCE_DEFAULT
+                                val channel = NotificationChannel(channelId, channelName, importance)
+                                notificationManager.createNotificationChannel(channel)
+                            }
+
+                            // Build the notification
+                            val builder = NotificationCompat.Builder(context, "my_channel_id")
+                                .setSmallIcon(android.R.drawable.ic_dialog_info) // Set icon
+                                .setContentTitle("Success!") // Set title
+                                .setContentText("ToDo list added! ${ToDo} :)") // Set message
+                                .setPriority(NotificationCompat.PRIORITY_DEFAULT) // Set priority
+
+                            // Show the notification
+                            notificationManager.notify(1, builder.build())
+
+                            tasks.clear()
+
                             navController.navigate(ToDoAppScreen.Start.name)
+
                         }
                     }
                 }
@@ -378,6 +417,7 @@ fun ToDoApp(applicationContext: Context) {
                 databaseRefToDo.addValueEventListener(object:ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
                         toDoList.clear()
+                        //toDoNodes.clear()
                         for(toDoSnapshot in snapshot.children)
                         {
                             val tempData = toDoSnapshot.key
@@ -405,7 +445,7 @@ fun ToDoApp(applicationContext: Context) {
                                 {
                                     for(task in valueSnapshot.children)
                                     {
-                                        val temp = task.value.toString()
+                                        val temp = task.key.toString()
 
                                         tasks.add(temp)
 

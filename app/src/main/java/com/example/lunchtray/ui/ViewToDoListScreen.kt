@@ -26,11 +26,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -94,6 +97,11 @@ fun DataBaseToDosColumn(
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
                         Column {
+                            var tempItr by remember {
+                                mutableIntStateOf(iterator)
+                            }
+
+
                             Text(
                                 text = "ToDo: ${item[iterator].taskName}",
                                 style = MaterialTheme.typography.bodyLarge
@@ -102,11 +110,45 @@ fun DataBaseToDosColumn(
                                 text = "Location Name: ${item[iterator].location}",
                                 style = MaterialTheme.typography.bodyLarge
                             )
+                            var temp by remember {
+                                mutableStateOf(false)
+                            }
+
+                            println(item.size)
+                            for(myvar in item)
+                            {
+                                println(myvar.taskName)
+                            }
+
                             for(task in item[iterator].tasks) {
-                                Text(
-                                    text = "Task: $task",
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
+
+                                Row {
+                                    Checkbox(checked = temp, onCheckedChange = {
+                                        temp = !temp
+                                        val auth = FirebaseAuth.getInstance()
+                                        if(temp) {
+                                            var databaseRef =
+                                                FirebaseDatabase.getInstance().reference.child("ToDo")
+                                                    .child(auth.currentUser?.uid.toString())
+                                                    .child(item[tempItr].taskName).child("Tasks")
+                                                    .child(task).setValue(1)
+                                        }
+                                        else
+                                        {
+                                            var databaseRef =
+                                                FirebaseDatabase.getInstance().reference.child("ToDo")
+                                                    .child(auth.currentUser?.uid.toString())
+                                                    .child(item[tempItr].taskName).child("Tasks")
+                                                    .child(task).setValue(0)
+                                        }
+
+                                    })
+                                    Text(
+                                        text = "Task: $task",
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                }
+
                             }
                         }
                         Button(

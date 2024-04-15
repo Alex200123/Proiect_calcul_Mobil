@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package com.example.lunchtray.ui
+import android.annotation.SuppressLint
 import android.content.Context
 import android.provider.ContactsContract.Data
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,7 +48,7 @@ import com.google.firebase.database.DataSnapshot
 import java.io.File
 
 var entryName: MutableState<String> = mutableStateOf("")
-var itemName: MutableState<String> = mutableStateOf("")
+var itemName: MutableList<MutableState<String>> = mutableListOf<MutableState<String>>()
 var selectedLocation: MutableState<String> = mutableStateOf("Please select location!")
 
 @Composable
@@ -68,6 +70,7 @@ fun AddToDoListScreen(
     }
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun AddToDoListButtonGroup(
     locations : MutableList<String>,
@@ -150,22 +153,68 @@ fun AddToDoListButtonGroup(
 
         }
 
-        Row(
+        itemName.add(mutableStateOf(""))
+
+        var size by remember {
+            mutableIntStateOf(0)
+        }
+
+
+        Column (
             modifier = modifier
         )
         {
-            Checkbox(checked = false, onCheckedChange = {})
-            TextField(value = itemName.value,
-                onValueChange = { itemName.value = it },
-                placeholder = { Text("ToDO Item") }
-            )
+
+            for(count in 0..size) {
+                Row(
+                    modifier = modifier
+                )
+                {
+                    Checkbox(checked = false, onCheckedChange = {})
+                    TextField(
+                        value = itemName[count].value,
+                        onValueChange = { itemName[count].value = it },
+                        placeholder = { Text("ToDO Item") }
+                    )
+                }
+            }
+
+            Button(onClick = {
+                itemName.add(mutableStateOf(""))
+                size++
+            }) {
+                Text(text = "New Task")
+            }
+
         }
+
+
 
         Row(
             modifier = modifier,
             horizontalArrangement = Arrangement.Center,
         ) {
-            Button(onClick = onSubmitButtonClicked) {
+            Button(onClick = {
+                var itemsToPop = mutableListOf<MutableState<String>>()
+
+                for(item in itemName) {
+
+
+
+                    if (item.value.isEmpty()) {
+                        itemsToPop.add(item)
+                    } else {
+                        println("test")
+                        println(item.value)
+                    }
+                }
+
+                for(item in itemsToPop)
+                {
+                    itemName.remove(item)
+                }
+
+                onSubmitButtonClicked()}) {
                 Text(text = "Submit")
             }
         }
@@ -177,9 +226,9 @@ fun getEntryName(): String
     return entryName.value
 }
 
-fun getItemName(): String
+fun getTasks(): MutableList<MutableState<String>>
 {
-    return itemName.value
+    return itemName
 }
 
 fun getSelectedLocation(): String
