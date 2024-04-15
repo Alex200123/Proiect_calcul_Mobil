@@ -114,7 +114,7 @@ fun DataBaseToDosColumn(
 
                                 val auth = FirebaseAuth.getInstance()
                                 val databaseRef = FirebaseDatabase.getInstance().reference
-                                    .child("Locations")
+                                    .child("ToDo")
                                     .child(auth.currentUser?.uid.toString())
                                     .child(i)
 

@@ -32,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
@@ -68,6 +69,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.launch
 
 
 enum class ToDoAppScreen(@StringRes val title: Int) {
@@ -134,6 +136,14 @@ fun ToDoApp(applicationContext: Context) {
     var toDoNodes: MutableList<TaskData> = mutableListOf<TaskData>()
     var toDoList: MutableList<String> = mutableListOf<String>()
 
+    val Thread_sign_in = rememberCoroutineScope()
+    val Thread_sign_up = rememberCoroutineScope()
+    val Thread_to_do_add = rememberCoroutineScope()
+    val Thread_locations_add = rememberCoroutineScope()
+    val Thread_locations_view = rememberCoroutineScope()
+    val Thread_to_do_view = rememberCoroutineScope()
+
+
     Scaffold(
         topBar = {
             ToDoAppBar(
@@ -159,24 +169,24 @@ fun ToDoApp(applicationContext: Context) {
                         navController.navigate(ToDoAppScreen.SignUp.name)
                     },
                     onSubmitButtonClicked = {
-                        val email:String = getEmailSignin().trim()
-                        val password: String = getPasswordSignin().trim()
+                        Thread_sign_in.launch {
+                            val email: String = getEmailSignin().trim()
+                            val password: String = getPasswordSignin().trim()
 
-                        val auth:FirebaseAuth
+                            val auth: FirebaseAuth
 
-                        auth = FirebaseAuth.getInstance()
+                            auth = FirebaseAuth.getInstance()
 
-                        if(email.isNotEmpty() && password.isNotEmpty())
-                        {
-                            auth.signInWithEmailAndPassword(email,password).addOnCompleteListener(
-                                {
-                                    if(it.isSuccessful)
+                            if (email.isNotEmpty() && password.isNotEmpty()) {
+                                auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(
                                     {
-                                        navController.navigate(ToDoAppScreen.Start.name)
-                                    }
-                                })
+                                        if (it.isSuccessful) {
+                                            navController.navigate(ToDoAppScreen.Start.name)
+                                        }
+                                    })
 
 
+                            }
                         }
                     }
 
@@ -190,66 +200,69 @@ fun ToDoApp(applicationContext: Context) {
                         .fillMaxSize()
                         .padding(innerPadding),
                     onSubmitButtonClicked = {
-                        val email:String = getEmail().trim()
-                        val password: String = getPassword().trim()
-                        val repeat_password: String = getRepeatPassword().trim()
+                        Thread_sign_up.launch {
+                            val email: String = getEmail().trim()
+                            val password: String = getPassword().trim()
+                            val repeat_password: String = getRepeatPassword().trim()
 
-                        var auth:FirebaseAuth
+                            var auth: FirebaseAuth
 
-                        auth = FirebaseAuth.getInstance()
+                            auth = FirebaseAuth.getInstance()
 
 
-                        if(email.isNotEmpty() && password.isNotEmpty() && repeat_password.isNotEmpty())
-                        {
-                            if(password == repeat_password)
-                            {
-                                auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(
-                                    {
-                                        if(it.isSuccessful)
-                                        {
-                                            navController.navigate(ToDoAppScreen.Start.name)
-                                        }
-                                    })
+                            if (email.isNotEmpty() && password.isNotEmpty() && repeat_password.isNotEmpty()) {
+                                if (password == repeat_password) {
+                                    auth.createUserWithEmailAndPassword(email, password)
+                                        .addOnCompleteListener(
+                                            {
+                                                if (it.isSuccessful) {
+                                                    navController.navigate(ToDoAppScreen.Start.name)
+                                                }
+                                            })
+                                }
                             }
                         }
                     }
                 )
             }
 
+
             composable(route = ToDoAppScreen.ToDoView.name){
 
-                val auth:FirebaseAuth
-                val databaseRef:DatabaseReference
+                Thread_to_do_add.launch {
+                    val auth:FirebaseAuth
+                    val databaseRef:DatabaseReference
 
-                auth = FirebaseAuth.getInstance()
+                    auth = FirebaseAuth.getInstance()
 
-                databaseRef = FirebaseDatabase.getInstance().reference.
-                child("Locations").
-                child(auth.currentUser?.uid.toString())
+                    databaseRef = FirebaseDatabase.getInstance().reference.
+                    child("Locations").
+                    child(auth.currentUser?.uid.toString())
 
-                databaseRef.addValueEventListener(object:ValueEventListener{
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        locationsForward.clear()
-                        for(locationSnapshot in snapshot.children)
-                        {
-                            val tempData = locationSnapshot.key
-                            if (tempData != null) {
-                                locationsForward.add(tempData.toString())
+
+
+                        databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                locationsForward.clear()
+                                for (locationSnapshot in snapshot.children) {
+                                    val tempData = locationSnapshot.key
+                                    if (tempData != null) {
+                                        locationsForward.add(tempData.toString())
+                                    }
+                                }
                             }
 
-                        }
-
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        TODO("Not yet implemented")
-                    }
-                })
+                            override fun onCancelled(error: DatabaseError) {
+                                TODO("Not yet implemented")
+                            }
+                        })
+                }
 
                 ViewToDoListScreen(
                     ToDos = toDoNodes,
                     ToDoList = toDoList,
-                    onDeleteButtonClicked = {},
+                    onDeleteButtonClicked = {
+                        navController.navigate(ToDoAppScreen.Start.name) },
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
                         .padding(innerPadding),
@@ -300,26 +313,23 @@ fun ToDoApp(applicationContext: Context) {
             composable(route = ToDoAppScreen.Start.name) {
 
 
-                val auth:FirebaseAuth
-                val databaseRef:DatabaseReference
+                val auth: FirebaseAuth
+                val databaseRef: DatabaseReference
 
-                val databaseRefToDo:DatabaseReference
+                val databaseRefToDo: DatabaseReference
 
                 auth = FirebaseAuth.getInstance()
 
-                databaseRef = FirebaseDatabase.getInstance().reference.
-                child("Locations").
-                child(auth.currentUser?.uid.toString())
+                databaseRef = FirebaseDatabase.getInstance().reference.child("Locations")
+                    .child(auth.currentUser?.uid.toString())
 
-                databaseRefToDo = FirebaseDatabase.getInstance().reference.
-                child("ToDo").
-                child(auth.currentUser?.uid.toString())
-
-                databaseRef.addValueEventListener(object:ValueEventListener{
+                databaseRefToDo = FirebaseDatabase.getInstance().reference.child("ToDo")
+                    .child(auth.currentUser?.uid.toString())
+                Thread_locations_view.launch {
+                databaseRef.addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         string_test.clear()
-                        for(locationSnapshot in snapshot.children)
-                        {
+                        for (locationSnapshot in snapshot.children) {
                             val tempData = locationSnapshot.key
                             if (tempData != null) {
                                 string_test.add(tempData.toString())
@@ -334,33 +344,26 @@ fun ToDoApp(applicationContext: Context) {
 
                                 val value = valueSnapshot.value.toString()
 
-                                if(iterator == 1)
-                                {
+                                if (iterator == 1) {
                                     locationName = value
-                                }
-                                else if(iterator == 2)
-                                {
+                                } else if (iterator == 2) {
                                     addressName = value
-                                }
-                                else if(iterator == 3)
-                                {
+                                } else if (iterator == 3) {
                                     maxAttendees = value
-                                }
-                                else if(iterator == 4)
-                                {
+                                } else if (iterator == 4) {
                                     hours = value
-                                }
-                                else if(iterator == 5)
-                                {
+                                } else if (iterator == 5) {
                                     days = value
                                 }
                                 iterator++
                             }
-                            var locationData = LocationData(locationName,
-                                                addressName,
-                                                maxAttendees,
-                                                hours,
-                                                days)
+                            var locationData = LocationData(
+                                locationName,
+                                addressName,
+                                maxAttendees,
+                                hours,
+                                days
+                            )
                             nodesInDatabase.add(locationData)
                         }
 
@@ -370,7 +373,8 @@ fun ToDoApp(applicationContext: Context) {
                         TODO("Not yet implemented")
                     }
                 })
-
+            }
+                Thread_to_do_view.launch{
                 databaseRefToDo.addValueEventListener(object:ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
                         toDoList.clear()
@@ -424,6 +428,7 @@ fun ToDoApp(applicationContext: Context) {
                         TODO("Not yet implemented")
                     }
                 })
+                }
 
                 SelectActivityScreen(
                     onLocationsButtonClicked = {
@@ -479,8 +484,9 @@ fun ToDoApp(applicationContext: Context) {
                         .verticalScroll(rememberScrollState())
                         .padding(innerPadding),
                     onSubmitButtonClicked = {
-                        val auth:FirebaseAuth
-                        val databaseRef:DatabaseReference
+                        Thread_locations_add.launch {
+                        val auth: FirebaseAuth
+                        val databaseRef: DatabaseReference
 
 
                         val locationName = getLocationName().trim()
@@ -491,16 +497,14 @@ fun ToDoApp(applicationContext: Context) {
 
                         auth = FirebaseAuth.getInstance()
 
-                        databaseRef = FirebaseDatabase.getInstance().reference.
-                        child("Locations").
-                        child(auth.currentUser?.uid.toString()).
-                        child(locationName)
-                        if(locationName.isNotEmpty() &&
+                        databaseRef = FirebaseDatabase.getInstance().reference.child("Locations")
+                            .child(auth.currentUser?.uid.toString()).child(locationName)
+                        if (locationName.isNotEmpty() &&
                             addressName.isNotEmpty() &&
-                            maxAttendees.isNotEmpty()&&
-                            hours.isNotEmpty()       &&
-                            days.isNotEmpty())
-                        {
+                            maxAttendees.isNotEmpty() &&
+                            hours.isNotEmpty() &&
+                            days.isNotEmpty()
+                        ) {
                             databaseRef.push().setValue(locationName)
                             databaseRef.push().setValue(addressName)
                             databaseRef.push().setValue(maxAttendees)
@@ -510,6 +514,7 @@ fun ToDoApp(applicationContext: Context) {
                             })
 
                         }
+                    }
                     }
                 )
 
