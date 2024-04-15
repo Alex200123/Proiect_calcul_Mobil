@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.lunchtray
+package com.example.lunchtray.Backend
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -23,7 +23,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import java.io.File
 
 class MainActivity : ComponentActivity() {
 

@@ -42,8 +42,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.lunchtray.R
-import com.example.lunchtray.datasource.DataSource
-import com.example.lunchtray.model.MenuItem
 import com.example.lunchtray.model.TaskData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase

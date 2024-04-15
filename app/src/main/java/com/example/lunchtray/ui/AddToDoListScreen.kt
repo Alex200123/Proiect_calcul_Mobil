@@ -16,7 +16,6 @@
 package com.example.lunchtray.ui
 import android.annotation.SuppressLint
 import android.content.Context
-import android.provider.ContactsContract.Data
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,11 +39,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
-import com.example.lunchtray.Audio
+import com.example.lunchtray.Backend.Audio
 
 import com.example.lunchtray.R
-import com.example.lunchtray.model.LocationData
-import com.google.firebase.database.DataSnapshot
 import java.io.File
 
 var entryName: MutableState<String> = mutableStateOf("")

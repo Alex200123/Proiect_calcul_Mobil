@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.lunchtray
+package com.example.lunchtray.Backend
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -43,13 +43,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.lunchtray.datasource.DataSource
+import com.example.lunchtray.R
+
 import com.example.lunchtray.model.LocationData
 import com.example.lunchtray.model.TaskData
 import com.example.lunchtray.ui.ViewLocationsScreen
 import com.example.lunchtray.ui.AddLocationMenuScreen
 import com.example.lunchtray.ui.AddToDoListScreen
-import com.example.lunchtray.ui.DetailsMenuScreen
 import com.example.lunchtray.ui.SignInScreen
 import com.example.lunchtray.ui.SignUpScreen
 import com.example.lunchtray.ui.SelectActivityScreen
@@ -86,7 +86,7 @@ enum class ToDoAppScreen(@StringRes val title: Int) {
     Checkout(title = R.string.order_checkout),
     ToDoView(title = R.string.ToDoView),
     ToDoAdd(title = R.string.ToDoAdd),
-    Details(title =  R.string.Details)
+    Details(title = R.string.Details)
 }
 
 /**
@@ -165,7 +165,6 @@ fun ToDoApp(applicationContext: Context) {
         ) {
             composable(route = ToDoAppScreen.SignIn.name) {
                 SignInScreen(
-                    options = DataSource.sideDishMenuItems,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding), 
@@ -199,7 +198,7 @@ fun ToDoApp(applicationContext: Context) {
 
             composable(route = ToDoAppScreen.SignUp.name) {
                 SignUpScreen(
-                    options = DataSource.sideDishMenuItems,
+
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
@@ -318,7 +317,7 @@ fun ToDoApp(applicationContext: Context) {
 
                         databaseRef.push().setValue(location).addOnCompleteListener {
 
-                            // NotificationManager to manage notifications
+                            //NotificationManager to manage notifications
                             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
                             // Create a notification channel for devices running Android Oreo and above
@@ -334,13 +333,12 @@ fun ToDoApp(applicationContext: Context) {
                             val builder = NotificationCompat.Builder(context, "my_channel_id")
                                 .setSmallIcon(android.R.drawable.ic_dialog_info) // Set icon
                                 .setContentTitle("Success!") // Set title
-                                .setContentText("ToDo list added! ${ToDo} :)") // Set message
+                                .setContentText("ToDo list added! :)") // Set message
                                 .setPriority(NotificationCompat.PRIORITY_DEFAULT) // Set priority
 
                             // Show the notification
                             notificationManager.notify(1, builder.build())
 
-                            tasks.clear()
 
                             navController.navigate(ToDoAppScreen.Start.name)
 
@@ -417,7 +415,7 @@ fun ToDoApp(applicationContext: Context) {
                 databaseRefToDo.addValueEventListener(object:ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
                         toDoList.clear()
-                        //toDoNodes.clear()
+                        toDoNodes.clear()
                         for(toDoSnapshot in snapshot.children)
                         {
                             val tempData = toDoSnapshot.key
@@ -509,13 +507,6 @@ fun ToDoApp(applicationContext: Context) {
                 )
             }
 
-            composable(route = ToDoAppScreen.Details.name){
-                DetailsMenuScreen(
-                    locations = nodesInDatabase,
-                    string_test = string_test,
-                    modifier = Modifier,
-                )
-            }
 
 
             composable(route = ToDoAppScreen.AddLocation.name) {

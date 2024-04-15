@@ -58,7 +58,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.lunchtray.R
 import com.example.lunchtray.model.LocationData
-import com.example.lunchtray.model.MenuItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -377,7 +376,6 @@ fun getDays(): String
 ///////////////SignIn screen
 @Composable
 fun SignInMenu(
-    options: List<MenuItem>,
     modifier: Modifier = Modifier,
     onSignUpButtonClicked: () -> Unit,
     onSubmitButtonClicked: () -> Unit,
@@ -471,7 +469,6 @@ fun getPasswordSignin(): String
 ///////////////SignUp screen
 @Composable
 fun SignUpMenu(
-    options: List<MenuItem>,
     modifier: Modifier = Modifier,
     onSubmitButtonClicked: () -> Unit,
     ) {
